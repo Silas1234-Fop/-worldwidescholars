@@ -6,65 +6,56 @@
 <title>World Wide Scholars — Free Scholarships for Rwandan Students</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-:root {
-  --navy:#0f1f5c; --blue:#2541b2; --accent:#f4a261;
-  --green:#1b4332; --light:#f8f9fe; --text:#1a1a2e;
-  --muted:#6b7280; --white:#ffffff;
-  --shadow:0 4px 24px rgba(15,31,92,0.10);
-  --shadow-lg:0 8px 40px rgba(15,31,92,0.18);
-  --radius:14px; --red:#c62828; --emerald:#047857;
-  --gold:#d97706;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
+:root{
+  --navy:#1a237e;--blue:#3949ab;--accent:#ff6f00;
+  --light:#f4f6fb;--text:#1a1a2e;--muted:#6b7280;
+  --shadow:0 4px 20px rgba(26,35,126,0.09);
+  --shadow-lg:0 8px 36px rgba(26,35,126,0.16);
+  --green:#1b5e20;--red:#b71c1c;--radius:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);}
-/* HEADER */
-header{background:linear-gradient(135deg,#0f1f5c 0%,#2541b2 50%,#3a5cc7 100%);color:white;padding:32px 20px 24px;text-align:center;position:relative;overflow:hidden;}
-header::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:rgba(255,255,255,0.05);border-radius:50%;}
-header::after{content:'';position:absolute;bottom:-40px;left:-40px;width:180px;height:180px;background:rgba(244,162,97,0.1);border-radius:50%;}
-header h1{font-family:'Playfair Display',serif;font-size:2.1rem;letter-spacing:.5px;position:relative;}
-header p{font-size:14px;opacity:.85;margin-top:7px;position:relative;}
-/* NAV */
-nav{background:white;padding:0 20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.08);position:sticky;top:0;z-index:200;display:flex;justify-content:center;flex-wrap:wrap;gap:0;}
-nav a{padding:14px 12px;text-decoration:none;color:var(--navy);font-weight:600;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
-nav a:hover{color:var(--accent);}
-nav a.active{color:var(--blue);border-bottom-color:var(--blue);}
-/* HERO SLIDER */
+header{background:linear-gradient(135deg,#1a237e,#3949ab,#5c6bc0);color:white;padding:28px 20px;text-align:center;}
+header h1{font-family:'Playfair Display',serif;font-size:2rem;}
+header p{font-size:14px;opacity:.85;margin-top:6px;}
+nav{background:white;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);position:sticky;top:0;z-index:200;display:flex;justify-content:center;flex-wrap:wrap;}
+nav a{padding:14px 11px;text-decoration:none;color:var(--navy);font-weight:600;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+nav a:hover,nav a.active{color:var(--accent);border-bottom-color:var(--accent);}
 .hero{max-width:1050px;margin:28px auto 0;padding:0 16px;}
-.hero-card{background:linear-gradient(135deg,#0f1f5c,#2541b2);border-radius:18px;padding:40px 32px;color:white;text-align:center;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;}
-.hero-card::before{content:'🎓';position:absolute;right:24px;top:20px;font-size:5rem;opacity:.12;}
-.hero-card h2{font-family:'Playfair Display',serif;font-size:1.9rem;margin-bottom:10px;}
-.hero-card p{opacity:.88;font-size:15px;margin-bottom:18px;}
+.hero-card{background:linear-gradient(135deg,#1a237e,#3949ab);border-radius:var(--radius);padding:36px 28px;color:white;text-align:center;box-shadow:var(--shadow-lg);}
+.hero-card h2{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:10px;}
+.hero-card p{opacity:.88;font-size:15px;margin-bottom:16px;}
 .hero-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;}
-/* CONTAINER */
+.pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:5px 14px;border-radius:20px;font-size:13px;}
 .container{max-width:1050px;margin:0 auto;padding:0 16px 40px;}
 .section-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--navy);margin:32px 0 16px;display:flex;align-items:center;gap:10px;}
 .section-title::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,var(--blue),transparent);}
-/* FILTERS */
-.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;background:white;padding:16px;border-radius:var(--radius);box-shadow:var(--shadow);}
-.filter-bar input,.filter-bar select{padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;flex:1;min-width:140px;outline:none;transition:border .2s;}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;background:white;padding:14px;border-radius:var(--radius);box-shadow:var(--shadow);}
+.filter-bar input,.filter-bar select{padding:9px 13px;border:1.5px solid #e5e7eb;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;flex:1;min-width:130px;outline:none;}
 .filter-bar input:focus,.filter-bar select:focus{border-color:var(--blue);}
-/* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:20px;}
-/* SCHOLARSHIP CARD */
-.scard{background:white;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);border-top:4px solid var(--blue);display:flex;flex-direction:column;gap:11px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;}
-.scard:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
-.scard.africa{border-top-color:#047857;}
-.scard.europe{border-top-color:#7c3aed;}
-.scard.rwanda{border-top-color:#d97706;}
-.scard.urgent{border-top-color:#c62828;}
-.scard-ribbon{position:absolute;top:14px;left:-28px;background:var(--accent);color:white;font-size:10px;font-weight:700;padding:4px 32px;transform:rotate(-45deg);letter-spacing:.5px;}
+#loading{text-align:center;padding:40px;color:var(--muted);display:none;}
+.spinner{width:34px;height:34px;border:3px solid #e5e7eb;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#no-results{text-align:center;padding:40px;color:var(--muted);display:none;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;}
+/* SCHOLARSHIP CARD — clean, no ribbon */
+.scard{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border-top:4px solid var(--blue);display:flex;flex-direction:column;gap:10px;transition:transform .2s,box-shadow .2s;}
+.scard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.scard.africa{border-top-color:#1b5e20;}
+.scard.europe{border-top-color:#6d28d9;}
+.scard.rwanda{border-top-color:#b45309;}
+.scard.urgent{border-top-color:#b71c1c;}
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .card-top h3{font-size:15px;color:var(--navy);line-height:1.4;flex:1;font-weight:600;}
 .badges{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
 .badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;color:white;white-space:nowrap;}
 .b-int{background:var(--navy);}
-.b-afr{background:#047857;}
-.b-eur{background:#7c3aed;}
-.b-rwa{background:#d97706;}
+.b-afr{background:#1b5e20;}
+.b-eur{background:#6d28d9;}
+.b-rwa{background:#b45309;}
 .b-new{background:var(--accent);}
-.b-urg{background:#c62828;}
+.b-urg{background:#b71c1c;}
 .b-free{background:#0369a1;}
 .desc{color:var(--muted);font-size:13px;line-height:1.65;flex:1;}
 .tags-row{display:flex;flex-wrap:wrap;gap:7px;}
@@ -72,115 +63,88 @@ nav a.active{color:var(--blue);border-bottom-color:var(--blue);}
 .tag-dl{background:#fff7ed;color:#9a3412;}
 .tag-urg{background:#fef2f2;color:#991b1b;font-weight:700;}
 .tag-free{background:#eff6ff;color:#1d4ed8;font-weight:600;}
-.tag-eu{background:#f5f3ff;color:#5b21b6;font-weight:600;}
-.card-btns{display:flex;gap:10px;margin-top:4px;}
-.apply-btn{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;padding:10px 18px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;flex:1;text-align:center;transition:opacity .2s;}
+.card-btns{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.apply-btn{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;padding:10px 18px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;flex:1;text-align:center;}
 .apply-btn:hover{opacity:.88;}
-.save-btn{background:transparent;border:1.5px solid var(--blue);color:var(--blue);padding:10px 14px;border-radius:9px;cursor:pointer;font-size:13px;transition:all .2s;}
-.save-btn:hover{background:var(--blue);color:white;}
-/* ANNOUNCEMENT PANEL */
-.ann-panel{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1.5px solid #bfdbfe;border-radius:var(--radius);padding:18px 20px;margin-top:12px;display:none;}
-.ann-panel h5{color:var(--navy);font-size:13px;font-weight:600;margin-bottom:8px;}
+.save-btn{background:transparent;border:1.5px solid var(--blue);color:var(--blue);padding:10px 12px;border-radius:9px;cursor:pointer;font-size:13px;}
+.ann-btn{background:transparent;border:1.5px solid #6d28d9;color:#6d28d9;padding:10px 12px;border-radius:9px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;}
+.ann-panel{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:9px;padding:14px;margin-top:4px;display:none;}
+.ann-panel h5{color:var(--navy);font-size:13px;font-weight:600;margin-bottom:6px;}
 .ann-text{font-size:12px;color:#374151;line-height:1.7;max-height:120px;overflow-y:auto;}
 .ann-source{font-size:11px;color:var(--muted);margin-top:6px;}
-.ann-loading{font-size:12px;color:var(--muted);font-style:italic;}
-.show-ann-btn{background:none;border:1px solid #bfdbfe;color:var(--blue);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;}
-/* STATS */
-.stats-bar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
-.stat-box{background:white;border-radius:12px;padding:18px 22px;flex:1;min-width:120px;text-align:center;box-shadow:var(--shadow);border-bottom:3px solid var(--blue);}
-.stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--navy);}
-.stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;}
-/* CARDS */
-.cbox{background:white;padding:26px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:22px;}
-.cbox h3{font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:12px;}
-.cbox p{color:var(--muted);line-height:1.7;margin-bottom:8px;}
+.stats-bar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;}
+.stat-box{background:white;border-radius:12px;padding:16px 20px;flex:1;min-width:120px;text-align:center;box-shadow:var(--shadow);border-bottom:3px solid var(--blue);}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--navy);}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:3px;font-weight:500;}
+.cbox{background:white;padding:24px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;}
+.cbox h3{font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:10px;}
+.cbox p{color:var(--muted);line-height:1.7;margin-bottom:7px;}
 .cbox.accent{border-left:5px solid var(--accent);}
-/* FORM */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .fg-1{grid-column:1/-1;}
 .fgrp{display:flex;flex-direction:column;gap:5px;}
 .fgrp label{font-size:13px;font-weight:600;color:var(--navy);}
-.fgrp input,.fgrp select{padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;}
+.fgrp input,.fgrp select{padding:10px 13px;border:1.5px solid #e5e7eb;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
 .fgrp input:focus,.fgrp select:focus{border-color:var(--blue);}
-/* BUTTONS */
-.btn{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;padding:12px 22px;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.btn{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;padding:11px 22px;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:opacity .2s;}
 .btn:hover{opacity:.88;}
 .btn:disabled{opacity:.45;cursor:not-allowed;}
 .btn-full{width:100%;margin-top:14px;}
-.btn-green{background:linear-gradient(135deg,#1b4332,#047857);}
-.btn-red{background:linear-gradient(135deg,#7f1d1d,#c62828);}
-.btn-gold{background:linear-gradient(135deg,#78350f,#d97706);}
-.btn-purple{background:linear-gradient(135deg,#4c1d95,#7c3aed);}
+.btn-green{background:linear-gradient(135deg,#1b5e20,#2e7d32);}
+.btn-red{background:linear-gradient(135deg,#7f1d1d,#b71c1c);}
+.btn-gold{background:linear-gradient(135deg,#78350f,#b45309);}
+.btn-purple{background:linear-gradient(135deg,#4c1d95,#6d28d9);}
 .btn-outline{background:transparent;border:2px solid var(--blue);color:var(--blue);}
 .ok-msg{background:#f0fdf4;color:#166534;padding:12px 16px;border-radius:9px;font-size:14px;margin-top:12px;display:none;}
-/* PAGES */
 .page{display:none;}
 .page.active{display:block;}
-/* REGION TABS */
-.rtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.rtab{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;color:var(--muted);background:white;transition:all .2s;}
-.rtab.active{background:var(--navy);color:white;border-color:var(--navy);}
-/* PUSH PANEL */
-.push-panel{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #6ee7b7;border-radius:var(--radius);padding:24px;margin-bottom:22px;}
-.push-panel h3{font-family:'Playfair Display',serif;color:#064e3b;margin-bottom:6px;font-size:1.2rem;}
-.push-panel p{color:#065f46;font-size:13px;margin-bottom:14px;}
+/* INSTANT PUSH PANEL */
+.push-panel{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #6ee7b7;border-radius:var(--radius);padding:22px;margin-bottom:20px;}
+.push-panel h3{font-family:'Playfair Display',serif;color:#065f46;margin-bottom:6px;font-size:1.2rem;}
+.push-panel p{color:#047857;font-size:13px;margin-bottom:14px;}
 .push-row{display:flex;gap:10px;flex-wrap:wrap;}
-.push-row input{flex:1;min-width:260px;padding:12px 16px;border:1.5px solid #6ee7b7;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:white;}
-.push-preview{margin-top:16px;background:white;border-radius:var(--radius);padding:20px;display:none;border:2px solid #6ee7b7;}
+.push-row input{flex:1;min-width:260px;padding:11px 15px;border:1.5px solid #6ee7b7;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:white;}
+.push-preview{margin-top:14px;background:white;border-radius:var(--radius);padding:18px;display:none;border:2px solid #6ee7b7;}
 .push-preview h4{color:var(--navy);margin-bottom:12px;font-size:15px;}
 .free-check{display:flex;align-items:center;gap:8px;background:#eff6ff;padding:10px 14px;border-radius:9px;margin-bottom:12px;}
 .free-check input{width:18px;height:18px;cursor:pointer;}
 .free-check label{font-size:14px;color:#1d4ed8;font-weight:600;cursor:pointer;}
-/* ADMIN */
-.admin-hdr{display:flex;justify-content:space-between;align-items:center;background:white;padding:16px 20px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-.acard{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:14px;border-left:4px solid var(--accent);}
-.acard h4{color:var(--navy);font-size:15px;margin-bottom:8px;}
-.acard p{color:var(--muted);font-size:13px;margin-bottom:4px;}
-.acard-btns{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
-.ab{border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:white;}
-.ab-rem{background:var(--red);}
-.sbadge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;}
-.sb-pub{background:#dcfce7;color:#166534;}
-.sb-exp{background:#f3f4f6;color:#6b7280;}
-.atabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-.atab{padding:10px 20px;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px;border:2px solid var(--blue);color:var(--blue);background:white;transition:all .2s;}
-.atab.active{background:var(--blue);color:white;}
 /* SCANNER */
-.scan-log{background:#0d1117;border-radius:10px;padding:16px;height:230px;overflow-y:auto;font-size:12px;font-family:monospace;margin-top:12px;}
+.scan-log{background:#0d1117;border-radius:10px;padding:14px;height:230px;overflow-y:auto;font-size:12px;font-family:monospace;margin-top:12px;}
 .li{padding:3px 0;border-bottom:1px solid #1c2128;}
 .ls{color:#56d364;}.li2{color:#58a6ff;}.lw{color:#e3b341;}.le{color:#f85149;}
-.progress-bar{background:#e5e7eb;border-radius:8px;height:10px;margin-top:12px;overflow:hidden;}
+.progress-bar{background:#e5e7eb;border-radius:8px;height:9px;margin-top:10px;overflow:hidden;}
 .pbar{background:linear-gradient(90deg,var(--blue),var(--accent));height:100%;border-radius:8px;transition:width .5s;width:0%;}
-.sc-stats{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
-.sc-stat{background:var(--light);padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;color:var(--navy);}
-/* ALERT */
+.sc-stats{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.sc-stat{background:var(--light);padding:7px 13px;border-radius:8px;font-size:13px;font-weight:600;color:var(--navy);}
+/* REGION TABS */
+.rtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.rtab{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;color:var(--muted);background:white;transition:all .2s;}
+.rtab.active{background:var(--navy);color:white;border-color:var(--navy);}
+/* ADMIN */
+.admin-hdr{display:flex;justify-content:space-between;align-items:center;background:white;padding:14px 18px;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+.acard{background:white;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;border-left:4px solid var(--accent);}
+.acard h4{color:var(--navy);font-size:14px;margin-bottom:7px;}
+.acard p{color:var(--muted);font-size:12px;margin-bottom:3px;}
+.acard-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.ab{border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:white;}
+.ab-rem{background:var(--red);}
+.sbadge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.sb-pub{background:#dcfce7;color:#166534;}
+.sb-exp{background:#f3f4f6;color:#6b7280;}
+.atabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.atab{padding:9px 18px;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px;border:2px solid var(--blue);color:var(--blue);background:white;transition:all .2s;}
+.atab.active{background:var(--blue);color:white;}
 .alert{padding:12px 16px;border-radius:9px;margin-bottom:14px;font-size:14px;display:none;}
 .alert-w{background:#fffbeb;border:1px solid #fde68a;color:#92400e;}
-/* LOADING */
-#loading{text-align:center;padding:40px;color:var(--muted);display:none;}
-.spinner{width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-#no-results{text-align:center;padding:40px;color:var(--muted);display:none;}
-/* FOOTER */
-footer{background:linear-gradient(135deg,#0f1f5c,#2541b2);color:white;padding:28px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:40px;}
-footer .fl{flex:1;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-footer .fc{flex:1;text-align:center;font-weight:700;font-family:'Playfair Display',serif;font-size:1rem;}
+footer{background:linear-gradient(135deg,#1a237e,#3949ab);color:white;padding:24px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:40px;}
+footer .fl{flex:1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+footer .fc{flex:1;text-align:center;font-weight:700;font-family:'Playfair Display',serif;}
 footer .fr{flex:1;text-align:right;font-size:13px;opacity:.8;}
 footer a{color:white;text-decoration:none;}
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:14px 20px;border-radius:10px;font-size:14px;box-shadow:0 4px 24px rgba(0,0,0,.25);transform:translateY(80px);opacity:0;transition:all .3s ease;z-index:9999;max-width:340px;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:white;padding:13px 18px;border-radius:10px;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,.25);transform:translateY(80px);opacity:0;transition:all .3s ease;z-index:9999;max-width:320px;}
 .toast.show{transform:translateY(0);opacity:1;}
-/* CATEGORY TABS */
-.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
-.cat-tab{padding:7px 16px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;color:var(--muted);background:white;transition:all .2s;}
-.cat-tab.active{background:var(--navy);color:white;border-color:var(--navy);}
-@media(max-width:600px){
-  .fg{grid-template-columns:1fr;}
-  .grid{grid-template-columns:1fr;}
-  .stats-bar{flex-direction:column;}
-  header h1{font-size:1.4rem;}
-  nav a{padding:12px 8px;font-size:12px;}
-}
+@media(max-width:600px){.fg{grid-template-columns:1fr;}.grid{grid-template-columns:1fr;}.stats-bar{flex-direction:column;}header h1{font-size:1.4rem;}nav a{padding:12px 8px;font-size:12px;}}
 </style>
 </head>
 <body>
@@ -188,7 +152,6 @@ footer a{color:white;text-decoration:none;}
   <h1>🌍 World Wide Scholars</h1>
   <p>100% Free Scholarships for Rwandan Students — Open Deadlines Only</p>
 </header>
-
 <nav>
   <a href="#" class="active" onclick="showPage('home',this)">Home</a>
   <a href="#" onclick="showPage('scholarships',this)">🌐 World</a>
@@ -199,15 +162,14 @@ footer a{color:white;text-decoration:none;}
   <a href="#" onclick="showPage('about',this)">About</a>
   <a href="#" onclick="showPage('admin',this)">⚙️ Admin</a>
 </nav>
-
 <div class="toast" id="toast"></div>
 
-<!-- ═══ HOME ═══ -->
+<!-- HOME -->
 <div class="page active" id="page-home">
   <div class="hero container">
     <div class="hero-card">
       <h2>Your Scholarship Journey Starts Here 🎓</h2>
-      <p>Only 100% FREE scholarships with open deadlines. Expired ones removed automatically every hour.</p>
+      <p>Only FREE scholarships with open deadlines. Expired ones removed automatically.</p>
       <div class="hero-pills">
         <span class="pill">✅ Free Only</span>
         <span class="pill">⏰ Open Deadlines</span>
@@ -221,29 +183,29 @@ footer a{color:white;text-decoration:none;}
     <div id="home-alert" class="alert alert-w"></div>
     <div class="stats-bar">
       <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Open Scholarships</div></div>
-      <div class="stat-box"><div class="stat-num" id="stat-africa">0</div><div class="stat-lbl">African Scholarships</div></div>
-      <div class="stat-box"><div class="stat-num" id="stat-europe">0</div><div class="stat-lbl">European Scholarships</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-europe">0</div><div class="stat-lbl">European</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-africa">0</div><div class="stat-lbl">African</div></div>
       <div class="stat-box"><div class="stat-num" id="stat-rwanda">0</div><div class="stat-lbl">Rwanda-Based</div></div>
       <div class="stat-box"><div class="stat-num" id="stat-students">0</div><div class="stat-lbl">Registered Students</div></div>
     </div>
     <div class="cbox accent">
       <h3>Why Trust World Wide Scholars?</h3>
-      <p>✅ Every scholarship shows the <strong>official announcement</strong> from the institution — no fake opportunities.</p>
-      <p>✅ Only <strong>100% free</strong> scholarships — no tuition, no application fees.</p>
-      <p>✅ Only scholarships with <strong>future deadlines</strong> — expired ones removed automatically every hour.</p>
-      <p>✅ <strong>Direct application links</strong> — click Apply Now and go straight to the official page.</p>
+      <p>✅ <strong>Only FREE</strong> — no tuition fees, no application costs, fully funded</p>
+      <p>✅ <strong>Only open deadlines</strong> — expired scholarships removed automatically every hour</p>
+      <p>✅ <strong>Official announcements</strong> — click 📢 on any card to read the institution's official text</p>
+      <p>✅ <strong>Direct apply links</strong> — Apply Now takes you straight to the official application</p>
     </div>
     <div class="section-title">🆕 Latest Open Scholarships</div>
     <div id="latest-list" class="grid"></div>
   </div>
 </div>
 
-<!-- ═══ WORLD SCHOLARSHIPS ═══ -->
+<!-- WORLD -->
 <div class="page" id="page-scholarships">
   <div class="container">
     <div class="section-title">🌐 International Scholarships</div>
     <div class="filter-bar">
-      <input type="text" id="search" placeholder="🔍 Search scholarships...">
+      <input type="text" id="search" placeholder="🔍 Search...">
       <select id="filter-country">
         <option value="">All Countries</option>
         <option value="UK">UK</option><option value="USA">USA</option>
@@ -251,8 +213,7 @@ footer a{color:white;text-decoration:none;}
         <option value="Japan">Japan</option><option value="Turkey">Turkey</option>
         <option value="Australia">Australia</option><option value="South Korea">South Korea</option>
         <option value="France">France</option><option value="Canada">Canada</option>
-        <option value="Netherlands">Netherlands</option><option value="Sweden">Sweden</option>
-        <option value="Norway">Norway</option><option value="International">International</option>
+        <option value="International">International</option>
       </select>
       <select id="filter-level">
         <option value="">All Levels</option>
@@ -262,21 +223,20 @@ footer a{color:white;text-decoration:none;}
         <option value="any">Any</option>
       </select>
       <select id="filter-sort">
-        <option value="deadline">Sort by Deadline</option>
-        <option value="newest">Sort by Newest</option>
+        <option value="deadline">By Deadline</option>
+        <option value="newest">By Newest</option>
       </select>
     </div>
-    <div id="loading"><div class="spinner"></div>Loading scholarships...</div>
+    <div id="loading"><div class="spinner"></div>Loading...</div>
     <div id="scholarships-list" class="grid"></div>
     <div id="no-results"><p style="font-size:2rem;margin-bottom:8px">🎓</p><p>No scholarships yet. Admin can scan to find them!</p></div>
   </div>
 </div>
 
-<!-- ═══ EUROPE ═══ -->
+<!-- EUROPE -->
 <div class="page" id="page-europe">
   <div class="container">
     <div class="section-title">🇪🇺 European Scholarships</div>
-    <p style="color:var(--muted);margin-bottom:16px;font-size:14px">Full free scholarships from European countries for Rwandan students.</p>
     <div class="rtabs">
       <button class="rtab active" onclick="filterEurope('all',this)">All Europe</button>
       <button class="rtab" onclick="filterEurope('Italy',this)">🇮🇹 Italy</button>
@@ -288,19 +248,17 @@ footer a{color:white;text-decoration:none;}
       <button class="rtab" onclick="filterEurope('Sweden',this)">🇸🇪 Sweden</button>
       <button class="rtab" onclick="filterEurope('Norway',this)">🇳🇴 Norway</button>
       <button class="rtab" onclick="filterEurope('Hungary',this)">🇭🇺 Hungary</button>
-      <button class="rtab" onclick="filterEurope('Czech Republic',this)">🇨🇿 Czech</button>
       <button class="rtab" onclick="filterEurope('Other Europe',this)">Other</button>
     </div>
     <div id="europe-list" class="grid"></div>
-    <div id="europe-empty" style="text-align:center;padding:40px;color:var(--muted);display:none"><p style="font-size:2rem">🇪🇺</p><p>No European scholarships yet! Admin can scan to find them.</p></div>
+    <div id="europe-empty" style="text-align:center;padding:40px;color:var(--muted);display:none"><p style="font-size:2rem">🇪🇺</p><p>No European scholarships yet. Admin can scan!</p></div>
   </div>
 </div>
 
-<!-- ═══ AFRICA ═══ -->
+<!-- AFRICA -->
 <div class="page" id="page-africa">
   <div class="container">
     <div class="section-title">🌍 African Scholarships</div>
-    <p style="color:var(--muted);margin-bottom:16px;font-size:14px">Free scholarships from African countries for Rwandan students.</p>
     <div class="rtabs">
       <button class="rtab active" onclick="filterAfrica('all',this)">All Africa</button>
       <button class="rtab" onclick="filterAfrica('East Africa',this)">East Africa</button>
@@ -314,13 +272,12 @@ footer a{color:white;text-decoration:none;}
   </div>
 </div>
 
-<!-- ═══ RWANDA ═══ -->
+<!-- RWANDA -->
 <div class="page" id="page-rwanda">
   <div class="container">
-    <div class="section-title">🇷🇼 Scholarships in Rwanda</div>
-    <p style="color:var(--muted);margin-bottom:16px;font-size:14px">International universities, private institutions, and government scholarships based in Rwanda.</p>
+    <div class="section-title">🇷🇼 Rwanda-Based Scholarships</div>
     <div class="rtabs">
-      <button class="rtab active" onclick="filterRwanda('all',this)">All Rwanda</button>
+      <button class="rtab active" onclick="filterRwanda('all',this)">All</button>
       <button class="rtab" onclick="filterRwanda('International University',this)">International Unis</button>
       <button class="rtab" onclick="filterRwanda('Private University',this)">Private Unis</button>
       <button class="rtab" onclick="filterRwanda('Government',this)">Government</button>
@@ -331,50 +288,45 @@ footer a{color:white;text-decoration:none;}
   </div>
 </div>
 
-<!-- ═══ REGISTER ═══ -->
+<!-- REGISTER -->
 <div class="page" id="page-register">
   <div class="container">
     <div class="section-title">📝 Student Registration</div>
     <div class="cbox">
       <h3>Create Your Account</h3>
-      <p style="color:var(--muted);font-size:14px;margin-bottom:20px">Register to save scholarships and receive instant alerts for new free opportunities.</p>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:18px">Register to save scholarships and receive alerts for new free opportunities.</p>
       <div class="fg">
         <div class="fgrp"><label>Full Name *</label><input type="text" id="reg-name" placeholder="Your full name"></div>
         <div class="fgrp"><label>Email *</label><input type="email" id="reg-email" placeholder="your@email.com"></div>
         <div class="fgrp"><label>Phone</label><input type="text" id="reg-phone" placeholder="07XXXXXXXX"></div>
         <div class="fgrp"><label>Education Level</label>
-          <select id="reg-edu">
-            <option value="">Select</option>
-            <option value="high_school">High School (A-Level)</option>
-            <option value="bachelor">Bachelor</option>
-            <option value="master">Master</option>
-            <option value="phd">PhD</option>
-          </select>
+          <select id="reg-edu"><option value="">Select</option><option value="high_school">High School</option><option value="bachelor">Bachelor</option><option value="master">Master</option><option value="phd">PhD</option></select>
         </div>
-        <div class="fgrp fg-1"><label>Field of Study</label><input type="text" id="reg-field" placeholder="e.g. Computer Science, Medicine, Engineering..."></div>
+        <div class="fgrp fg-1"><label>Field of Study</label><input type="text" id="reg-field" placeholder="e.g. Computer Science, Medicine..."></div>
       </div>
       <button class="btn btn-full" onclick="registerStudent()">✅ Register Now</button>
-      <div class="ok-msg" id="reg-ok">🎉 Registration successful! You will receive alerts for new free scholarships.</div>
+      <div class="ok-msg" id="reg-ok">🎉 Registration successful! You will receive alerts for new scholarships.</div>
     </div>
   </div>
 </div>
 
-<!-- ═══ ABOUT ═══ -->
+<!-- ABOUT -->
 <div class="page" id="page-about">
   <div class="container">
     <div class="section-title">ℹ️ About Us</div>
     <div class="cbox accent">
       <h3>World Wide Scholars</h3>
-      <p>We help Rwandan students find <strong>100% free full scholarship</strong> opportunities — worldwide, across Europe, Africa, and right here in Rwanda.</p>
-      <p>Every scholarship comes with the <strong>official announcement</strong> from the institution so you can verify it is real.</p>
-      <p>Our system automatically removes expired scholarships every hour — only open ones are shown.</p>
-      <p><strong>📍</strong> Musanze, Nkotsi, Northern Province &nbsp;&nbsp; <strong>📞</strong> 0786695724</p>
+      <p>We help Rwandan students find <strong>100% free full scholarships</strong> worldwide, Europe, Africa and Rwanda.</p>
+      <p>Every scholarship shows the <strong>official announcement</strong> from the institution — no fake opportunities.</p>
+      <p>Expired scholarships are removed automatically every hour.</p>
+      <p><strong>📍</strong> Musanze, Nkotsi, Northern Province &nbsp; <strong>📞</strong> 0786695724</p>
       <p><strong>📸</strong> <a href="https://www.instagram.com/worldwidescholar" target="_blank" style="color:var(--blue)">@worldwidescholar</a></p>
+      <p><strong>🌐</strong> <a href="https://worldwidescholars.netlify.app" target="_blank" style="color:var(--blue)">worldwidescholars.netlify.app</a></p>
     </div>
   </div>
 </div>
 
-<!-- ═══ ADMIN ═══ -->
+<!-- ADMIN -->
 <div class="page" id="page-admin">
   <div class="container">
     <div class="section-title">⚙️ Admin Dashboard</div>
@@ -382,7 +334,7 @@ footer a{color:white;text-decoration:none;}
       <div class="cbox" style="max-width:420px;margin:20px auto;text-align:center">
         <div style="font-size:3rem;margin-bottom:12px">🔐</div>
         <h3 style="margin-bottom:8px">Admin Login</h3>
-        <p style="color:var(--muted);font-size:13px;margin-bottom:20px">Enter password to access the admin dashboard</p>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Enter password to access the admin dashboard</p>
         <div class="fgrp" style="margin-bottom:12px;text-align:left">
           <label>Password</label>
           <input type="password" id="admin-pass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()">
@@ -392,23 +344,20 @@ footer a{color:white;text-decoration:none;}
     </div>
     <div id="admin-dashboard" style="display:none">
       <div class="admin-hdr">
-        <div>
-          <p style="font-weight:600;color:var(--navy);font-size:15px">✅ Logged in as Admin</p>
-          <p style="font-size:12px;color:var(--muted)">World Wide Scholars — Admin Panel</p>
-        </div>
-        <button class="btn btn-red" style="margin-top:0;padding:8px 18px;font-size:13px" onclick="adminLogout()">🔒 Logout</button>
+        <div><p style="font-weight:600;color:var(--navy);font-size:15px">✅ Logged in as Admin</p><p style="font-size:12px;color:var(--muted)">World Wide Scholars Dashboard</p></div>
+        <button class="btn btn-red" style="margin-top:0;padding:8px 16px;font-size:13px" onclick="adminLogout()">🔒 Logout</button>
       </div>
 
       <!-- ⚡ INSTANT PUSH -->
       <div class="push-panel">
-        <h3>⚡ Instant Push — Publish Any Free Scholarship Now</h3>
-        <p>Paste any scholarship URL. Groq AI reads the official page, extracts all details, verifies it is FREE with a future deadline, then publishes it instantly with the official announcement text.</p>
+        <h3>⚡ Instant Push — Publish Any Scholarship From URL</h3>
+        <p>Paste any scholarship URL. AI extracts all details, verifies FREE + future deadline, then publishes instantly with official announcement.</p>
         <div class="push-row">
-          <input type="url" id="push-url" placeholder="https://www.chevening.org/scholarships/ or any scholarship URL...">
+          <input type="url" id="push-url" placeholder="https://www.chevening.org/scholarships/ or any scholarship page URL...">
           <button class="btn btn-green" id="push-btn" onclick="instantPush()">⚡ Extract & Push</button>
         </div>
         <div class="push-preview" id="push-preview">
-          <h4>📋 Extracted Details — Verify Before Publishing</h4>
+          <h4>📋 Verify Before Publishing</h4>
           <div class="free-check">
             <input type="checkbox" id="push-is-free" checked>
             <label for="push-is-free">✅ This scholarship is 100% FREE (no fees, fully funded)</label>
@@ -418,66 +367,55 @@ footer a{color:white;text-decoration:none;}
             <div class="fgrp"><label>Country *</label><input type="text" id="push-country"></div>
             <div class="fgrp"><label>Deadline * (must be future)</label><input type="date" id="push-deadline"></div>
             <div class="fgrp"><label>Level</label>
-              <select id="push-level">
-                <option value="bachelor">Bachelor</option><option value="master">Master</option>
-                <option value="phd">PhD</option><option value="any">Any Level</option>
-              </select>
+              <select id="push-level"><option value="bachelor">Bachelor</option><option value="master">Master</option><option value="phd">PhD</option><option value="any">Any</option></select>
             </div>
             <div class="fgrp fg-1"><label>Application Link *</label><input type="url" id="push-link"></div>
             <div class="fgrp fg-1"><label>Description</label><input type="text" id="push-desc"></div>
-            <div class="fgrp"><label>Region/Category</label>
+            <div class="fgrp"><label>Region</label>
               <select id="push-region">
                 <option value="International">International</option>
-                <option value="Italy">Italy (Europe)</option>
-                <option value="Romania">Romania (Europe)</option>
-                <option value="Germany">Germany (Europe)</option>
-                <option value="France">France (Europe)</option>
-                <option value="Netherlands">Netherlands (Europe)</option>
-                <option value="Belgium">Belgium (Europe)</option>
-                <option value="Sweden">Sweden (Europe)</option>
-                <option value="Norway">Norway (Europe)</option>
-                <option value="Hungary">Hungary (Europe)</option>
-                <option value="Czech Republic">Czech Republic (Europe)</option>
-                <option value="Other Europe">Other Europe</option>
-                <option value="East Africa">East Africa</option>
-                <option value="Southern Africa">Southern Africa</option>
-                <option value="West Africa">West Africa</option>
-                <option value="North Africa">North Africa</option>
+                <option value="Italy">Italy</option><option value="Romania">Romania</option>
+                <option value="Germany">Germany</option><option value="France">France</option>
+                <option value="Netherlands">Netherlands</option><option value="Belgium">Belgium</option>
+                <option value="Sweden">Sweden</option><option value="Norway">Norway</option>
+                <option value="Hungary">Hungary</option><option value="Other Europe">Other Europe</option>
+                <option value="East Africa">East Africa</option><option value="Southern Africa">Southern Africa</option>
+                <option value="West Africa">West Africa</option><option value="North Africa">North Africa</option>
                 <option value="Pan-African">Pan-African</option>
                 <option value="International University">Rwanda — International Uni</option>
                 <option value="Private University">Rwanda — Private Uni</option>
                 <option value="Government">Rwanda — Government</option>
-                <option value="NGO">Rwanda — NGO/Foundation</option>
+                <option value="NGO">Rwanda — NGO</option>
               </select>
             </div>
-            <div class="fgrp fg-1"><label>Official Announcement (paste official text from school website)</label>
-              <input type="text" id="push-announcement" placeholder="Paste official announcement text here for verification...">
+            <div class="fgrp fg-1"><label>Official Announcement (from institution website)</label>
+              <input type="text" id="push-ann" placeholder="Paste official text here...">
             </div>
           </div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <button class="btn btn-green" onclick="confirmPush()">✅ Verify & Publish Instantly</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-green" onclick="confirmPush()">✅ Confirm & Publish Now</button>
             <button class="btn btn-outline" onclick="cancelPush()">✖ Cancel</button>
           </div>
         </div>
       </div>
 
-      <!-- 🤖 SCANNER -->
+      <!-- SCANNER -->
       <div class="cbox" style="margin-bottom:20px">
-        <h3>🤖 AI Scanner — Find Free Open Scholarships</h3>
-        <p style="color:var(--muted);font-size:14px;margin-bottom:16px">Scans all 90+ sources. Only <strong>FREE scholarships with future deadlines</strong> are published. Includes official announcement text.</p>
+        <h3>🤖 AI Scanner — 4 Proxies + Smart Fallback</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Scans 90+ sources using 4 proxy servers. If AI key fails → keyword detection fallback. If website blocked → uses known scholarship data. Only FREE + future deadlines published.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn" id="btn-all" onclick="runScanner('all')">🌐 Scan All Sources</button>
-          <button class="btn" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)" id="btn-eu" onclick="runScanner('europe')">🇪🇺 Scan Europe</button>
-          <button class="btn btn-green" id="btn-afr" onclick="runScanner('africa')">🌍 Scan Africa</button>
-          <button class="btn btn-gold" id="btn-rwa" onclick="runScanner('rwanda')">🇷🇼 Scan Rwanda</button>
+          <button class="btn" style="background:linear-gradient(135deg,#4c1d95,#6d28d9)" id="btn-eu" onclick="runScanner('europe')">🇪🇺 Europe</button>
+          <button class="btn btn-green" id="btn-afr" onclick="runScanner('africa')">🌍 Africa</button>
+          <button class="btn btn-gold" id="btn-rwa" onclick="runScanner('rwanda')">🇷🇼 Rwanda</button>
           <button class="btn btn-red" onclick="removeExpired()">🗑️ Remove Expired</button>
         </div>
         <div class="sc-stats">
           <div class="sc-stat">Checked: <span id="sc-chk">0</span></div>
-          <div class="sc-stat" style="color:var(--emerald)">Published: <span id="sc-pub">0</span></div>
-          <div class="sc-stat" style="color:#7c3aed">Paid/Skipped: <span id="sc-skip">0</span></div>
-          <div class="sc-stat" style="color:#d97706">Blocked: <span id="sc-blk">0</span></div>
-          <div class="sc-stat" style="color:var(--red)">Removed: <span id="sc-rem">0</span></div>
+          <div class="sc-stat" style="color:#1b5e20">Published: <span id="sc-pub">0</span></div>
+          <div class="sc-stat" style="color:#6d28d9">Skipped: <span id="sc-skip">0</span></div>
+          <div class="sc-stat" style="color:#b45309">Blocked: <span id="sc-blk">0</span></div>
+          <div class="sc-stat" style="color:#b71c1c">Removed: <span id="sc-rem">0</span></div>
         </div>
         <div class="progress-bar"><div class="pbar" id="pbar"></div></div>
         <div class="scan-log" id="scan-log"><div class="li li2">Ready. Click a scan button to start...</div></div>
@@ -489,49 +427,38 @@ footer a{color:white;text-decoration:none;}
         <p style="color:var(--muted);font-size:13px;margin-bottom:4px">Only FREE scholarships with future deadlines. Published instantly.</p>
         <div class="fg" style="margin-top:14px">
           <div class="fgrp"><label>Title *</label><input type="text" id="m-title" placeholder="Scholarship name"></div>
-          <div class="fgrp"><label>Country *</label><input type="text" id="m-country" placeholder="e.g. Italy, Rwanda, Kenya"></div>
-          <div class="fgrp"><label>Deadline * (future date)</label><input type="date" id="m-deadline"></div>
+          <div class="fgrp"><label>Country *</label><input type="text" id="m-country" placeholder="e.g. Italy, Kenya, Rwanda"></div>
+          <div class="fgrp"><label>Deadline * (future only)</label><input type="date" id="m-deadline"></div>
           <div class="fgrp"><label>Level</label>
-            <select id="m-level">
-              <option value="bachelor">Bachelor</option><option value="master">Master</option>
-              <option value="phd">PhD</option><option value="any">Any</option>
-            </select>
+            <select id="m-level"><option value="bachelor">Bachelor</option><option value="master">Master</option><option value="phd">PhD</option><option value="any">Any</option></select>
           </div>
           <div class="fgrp fg-1"><label>Application Link *</label><input type="url" id="m-link" placeholder="https://..."></div>
-          <div class="fgrp fg-1"><label>Description (what is covered)</label><input type="text" id="m-desc" placeholder="e.g. Full scholarship covering tuition, accommodation, flights"></div>
-          <div class="fgrp"><label>Region/Category</label>
+          <div class="fgrp fg-1"><label>Description (what is covered)</label><input type="text" id="m-desc" placeholder="e.g. Full scholarship: tuition + accommodation + flights"></div>
+          <div class="fgrp"><label>Region</label>
             <select id="m-region">
               <option value="International">International</option>
-              <option value="Italy">Italy (Europe)</option>
-              <option value="Romania">Romania (Europe)</option>
-              <option value="Germany">Germany (Europe)</option>
-              <option value="France">France (Europe)</option>
-              <option value="Netherlands">Netherlands (Europe)</option>
-              <option value="Belgium">Belgium (Europe)</option>
-              <option value="Sweden">Sweden (Europe)</option>
-              <option value="Norway">Norway (Europe)</option>
-              <option value="Hungary">Hungary (Europe)</option>
-              <option value="Czech Republic">Czech Republic (Europe)</option>
-              <option value="Other Europe">Other Europe</option>
-              <option value="East Africa">East Africa</option>
-              <option value="Southern Africa">Southern Africa</option>
-              <option value="West Africa">West Africa</option>
-              <option value="North Africa">North Africa</option>
+              <option value="Italy">Italy</option><option value="Romania">Romania</option>
+              <option value="Germany">Germany</option><option value="France">France</option>
+              <option value="Netherlands">Netherlands</option><option value="Belgium">Belgium</option>
+              <option value="Sweden">Sweden</option><option value="Norway">Norway</option>
+              <option value="Hungary">Hungary</option><option value="Other Europe">Other Europe</option>
+              <option value="East Africa">East Africa</option><option value="Southern Africa">Southern Africa</option>
+              <option value="West Africa">West Africa</option><option value="North Africa">North Africa</option>
               <option value="Pan-African">Pan-African</option>
               <option value="International University">Rwanda — International Uni</option>
               <option value="Private University">Rwanda — Private Uni</option>
               <option value="Government">Rwanda — Government</option>
-              <option value="NGO">Rwanda — NGO/Foundation</option>
+              <option value="NGO">Rwanda — NGO</option>
             </select>
           </div>
-          <div class="fgrp fg-1"><label>Official Announcement Text (from school website)</label>
-            <input type="text" id="m-announcement" placeholder="Paste the official announcement from the institution...">
+          <div class="fgrp fg-1"><label>Official Announcement</label>
+            <input type="text" id="m-ann" placeholder="Paste official text from institution website...">
           </div>
         </div>
-        <button class="btn btn-purple" style="margin-top:12px" onclick="addManual()">💾 Publish Free Scholarship Now</button>
+        <button class="btn btn-purple" style="margin-top:12px" onclick="addManual()">💾 Publish Now</button>
       </div>
 
-      <!-- MANAGE TABS -->
+      <!-- MANAGE -->
       <div class="atabs">
         <button class="atab active" onclick="showTab('published',this)">✅ Published (<span id="cnt-pub">0</span>)</button>
         <button class="atab" onclick="showTab('expired',this)">🕐 Expired (<span id="cnt-exp">0</span>)</button>
@@ -549,646 +476,132 @@ footer a{color:white;text-decoration:none;}
 </footer>
 
 <script>
-// ══════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════
+// ════════════════════════════════
+// CONFIG — Replace GROQ key after getting new one from console.groq.com
+// ════════════════════════════════
 const SUPABASE_URL='https://djmnjznfdklfvqnfxfaw.supabase.co'
 const SUPABASE_KEY='sb_publishable_LKiXksepfT-qGY5EPns2Uw_BKmugH_7'
-const GROQ_KEY='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'
+const API_URL='https://scholarship-api.onrender.com'
+const API_KEY='change-this-secret-key'
 const ADMIN_PASS='worldwidescholars2026'
 
-// ══════════════════════════════════════════════
-// ALL SCHOLARSHIP SOURCES — 90+ SOURCES
-// ══════════════════════════════════════════════
+// ════════════════════════════════
+// SCHOLARSHIP SOURCES — 90+ sources, all currently offering scholarships
+// ════════════════════════════════
 const WORLD_UNIS=[
-  {name:'Chevening',url:'https://www.chevening.org/scholarships/',country:'UK',region:'International',cat:'world'},
-  {name:'Fulbright USA',url:'https://foreign.fulbrightonline.org/',country:'USA',region:'International',cat:'world'},
-  {name:'DAAD Germany',url:'https://www.daad.de/en/studying-in-germany/scholarships/',country:'Germany',region:'International',cat:'world'},
-  {name:'Mastercard Foundation',url:'https://mastercardfdn.org/all/scholars/',country:'International',region:'International',cat:'world'},
-  {name:'Commonwealth UK',url:'https://cscuk.fcdo.gov.uk/apply/',country:'UK',region:'International',cat:'world'},
-  {name:'Australia Awards',url:'https://www.australiaawards.gov.au/',country:'Australia',region:'International',cat:'world'},
-  {name:'Chinese Scholarship CSC',url:'https://www.campuschina.org/',country:'China',region:'International',cat:'world'},
-  {name:'Korean KGSP',url:'https://www.niied.go.kr/',country:'South Korea',region:'International',cat:'world'},
-  {name:'MEXT Japan',url:'https://www.studyinjapan.go.jp/en/',country:'Japan',region:'International',cat:'world'},
-  {name:'Turkiye Burslari',url:'https://turkiyeburslari.gov.tr/en',country:'Turkey',region:'International',cat:'world'},
-  {name:'Taiwan ICDF',url:'https://www.icdf.org.tw/ct.asp?xItem=12682&CtNode=30316&mp=2',country:'Taiwan',region:'International',cat:'world'},
-  {name:'Israel MASHAV',url:'https://mfa.gov.il/MFA/MFAInfo/Humanitarian/Pages/MASHAV.aspx',country:'Israel',region:'International',cat:'world'},
-  {name:'Russian Government Scholarship',url:'https://www.russia.edu.ru/en',country:'Russia',region:'International',cat:'world'},
-  {name:'Aga Khan Foundation',url:'https://www.akdn.org/our-agencies/aga-khan-foundation/international-scholarship-programme',country:'International',region:'International',cat:'world'},
-  {name:'Gates Cambridge',url:'https://www.gatescambridge.org/',country:'UK',region:'International',cat:'world'},
+  {name:'Chevening UK',url:'https://www.chevening.org/scholarships/',country:'UK',region:'International'},
+  {name:'Fulbright USA',url:'https://foreign.fulbrightonline.org/',country:'USA',region:'International'},
+  {name:'Commonwealth UK',url:'https://cscuk.fcdo.gov.uk/apply/',country:'UK',region:'International'},
+  {name:'Australia Awards',url:'https://www.australiaawards.gov.au/',country:'Australia',region:'International'},
+  {name:'DAAD Germany',url:'https://www.daad.de/en/studying-in-germany/scholarships/',country:'Germany',region:'International'},
+  {name:'Mastercard Foundation',url:'https://mastercardfdn.org/all/scholars/',country:'International',region:'International'},
+  {name:'Chinese Scholarship CSC',url:'https://www.campuschina.org/',country:'China',region:'International'},
+  {name:'Korean KGSP',url:'https://www.niied.go.kr/',country:'South Korea',region:'International'},
+  {name:'MEXT Japan',url:'https://www.studyinjapan.go.jp/en/',country:'Japan',region:'International'},
+  {name:'Turkiye Burslari',url:'https://turkiyeburslari.gov.tr/en',country:'Turkey',region:'International'},
+  {name:'Campus France',url:'https://www.campusfrance.org/en/scholarship',country:'France',region:'International'},
+  {name:'Taiwan ICDF',url:'https://www.icdf.org.tw/ct.asp?xItem=12682&CtNode=30316&mp=2',country:'Taiwan',region:'International'},
+  {name:'Aga Khan Foundation',url:'https://www.akdn.org/our-agencies/aga-khan-foundation/international-scholarship-programme',country:'International',region:'International'},
+  {name:'Gates Cambridge',url:'https://www.gatescambridge.org/',country:'UK',region:'International'},
+  {name:'REB Rwanda',url:'https://www.reb.rw/',country:'Rwanda',region:'International'},
 ]
-
 const EUROPE_UNIS=[
-  // ITALY
-  {name:'Italian Government Scholarship MAECI',url:'https://studyinitaly.esteri.it/en/home',country:'Italy',region:'Italy',cat:'europe'},
-  {name:'University of Bologna Scholarships',url:'https://www.unibo.it/en/services-and-opportunities/study-grants-and-subsidies/study-grants',country:'Italy',region:'Italy',cat:'europe'},
-  {name:'Politecnico di Torino',url:'https://www.polito.it/en/education/studying-at-polito/fees-and-financial-support/scholarships',country:'Italy',region:'Italy',cat:'europe'},
-  {name:'Politecnico di Milano',url:'https://www.polimi.it/en/programmes/scholarships-and-grants',country:'Italy',region:'Italy',cat:'europe'},
-  {name:'University of Padua',url:'https://www.unipd.it/en/scholarships-international-students',country:'Italy',region:'Italy',cat:'europe'},
-  // ROMANIA
-  {name:'Romanian Government Scholarship',url:'https://www.edu.ro/burse-guvernamentale-strainatate',country:'Romania',region:'Romania',cat:'europe'},
-  {name:'Study in Romania — MFA',url:'https://www.mae.ro/en/node/2032',country:'Romania',region:'Romania',cat:'europe'},
+  // ITALY — commonly applied by Rwandans
+  {name:'Italian Government MAECI',url:'https://studyinitaly.esteri.it/en/home',country:'Italy',region:'Italy'},
+  {name:'University of Bologna',url:'https://www.unibo.it/en/services-and-opportunities/study-grants-and-subsidies/study-grants',country:'Italy',region:'Italy'},
+  {name:'Politecnico di Torino',url:'https://www.polito.it/en/education/studying-at-polito/fees-and-financial-support/scholarships',country:'Italy',region:'Italy'},
+  {name:'Politecnico di Milano',url:'https://www.polimi.it/en/programmes/scholarships-and-grants',country:'Italy',region:'Italy'},
+  {name:'University of Padua',url:'https://www.unipd.it/en/scholarships-international-students',country:'Italy',region:'Italy'},
+  {name:'University of Trento',url:'https://www.unitn.it/en/node/898',country:'Italy',region:'Italy'},
+  // ROMANIA — popular for Rwandans
+  {name:'Romanian Government MFA',url:'https://www.mae.ro/en/node/2032',country:'Romania',region:'Romania'},
+  {name:'Study in Romania',url:'https://studyinromania.gov.ro/',country:'Romania',region:'Romania'},
   // GERMANY
-  {name:'DAAD Scholarships',url:'https://www.daad.de/en/studying-in-germany/scholarships/',country:'Germany',region:'Germany',cat:'europe'},
-  {name:'Heinrich Boll Foundation',url:'https://www.boell.de/en/foundation/scholarships',country:'Germany',region:'Germany',cat:'europe'},
-  {name:'Konrad Adenauer Foundation',url:'https://www.kas.de/en/web/begabtenfoerderung-und-kultur/scholarships',country:'Germany',region:'Germany',cat:'europe'},
+  {name:'DAAD Scholarships',url:'https://www.daad.de/en/studying-in-germany/scholarships/',country:'Germany',region:'Germany'},
+  {name:'Heinrich Boll Foundation',url:'https://www.boell.de/en/foundation/scholarships',country:'Germany',region:'Germany'},
+  {name:'Konrad Adenauer Foundation',url:'https://www.kas.de/en/web/begabtenfoerderung-und-kultur/scholarships',country:'Germany',region:'Germany'},
   // FRANCE
-  {name:'Campus France',url:'https://www.campusfrance.org/en/scholarship',country:'France',region:'France',cat:'europe'},
-  {name:'Eiffel Excellence Scholarship',url:'https://www.campusfrance.org/en/eiffel-scholarship-program-of-excellence',country:'France',region:'France',cat:'europe'},
+  {name:'Eiffel Excellence Scholarship',url:'https://www.campusfrance.org/en/eiffel-scholarship-program-of-excellence',country:'France',region:'France'},
+  {name:'Campus France Scholarships',url:'https://www.campusfrance.org/en/scholarship',country:'France',region:'France'},
   // NETHERLANDS
-  {name:'Orange Tulip Scholarship',url:'https://www.studyinholland.nl/scholarships/orange-tulip-scholarship',country:'Netherlands',region:'Netherlands',cat:'europe'},
-  {name:'Holland Scholarship',url:'https://www.studyinholland.nl/scholarships/holland-scholarship',country:'Netherlands',region:'Netherlands',cat:'europe'},
+  {name:'Orange Tulip Scholarship',url:'https://www.studyinholland.nl/scholarships/orange-tulip-scholarship',country:'Netherlands',region:'Netherlands'},
+  {name:'Holland Scholarship',url:'https://www.studyinholland.nl/scholarships/holland-scholarship',country:'Netherlands',region:'Netherlands'},
   // BELGIUM
-  {name:'VLIR-UOS Scholarships',url:'https://www.vliruos.be/en/scholarships/scholarships_for_students_from_the_south/',country:'Belgium',region:'Belgium',cat:'europe'},
-  {name:'Belgian Development Cooperation',url:'https://diplomatie.belgium.be/en/policy/development_cooperation/scholarships',country:'Belgium',region:'Belgium',cat:'europe'},
+  {name:'VLIR-UOS Belgium',url:'https://www.vliruos.be/en/scholarships/scholarships_for_students_from_the_south/',country:'Belgium',region:'Belgium'},
   // SWEDEN
-  {name:'Swedish Institute Study Scholarships',url:'https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/',country:'Sweden',region:'Sweden',cat:'europe'},
+  {name:'Swedish Institute SISGP',url:'https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/',country:'Sweden',region:'Sweden'},
   // NORWAY
-  {name:'Norwegian Quota Scheme',url:'https://hkdir.no/en/funds-grants-and-prizes/quota-scheme',country:'Norway',region:'Norway',cat:'europe'},
-  {name:'Norwegian Government Scholarship',url:'https://www.siu.no/eng/Front-page',country:'Norway',region:'Norway',cat:'europe'},
+  {name:'Norwegian Quota Scheme',url:'https://hkdir.no/en/funds-grants-and-prizes/quota-scheme',country:'Norway',region:'Norway'},
   // HUNGARY
-  {name:'Stipendium Hungaricum',url:'https://stipendiumhungaricum.hu/',country:'Hungary',region:'Hungary',cat:'europe'},
-  // CZECH REPUBLIC
-  {name:'Czech Government Scholarship',url:'https://www.dzs.cz/en/funding-opportunities/scholarship-programmes/',country:'Czech Republic',region:'Czech Republic',cat:'europe'},
+  {name:'Stipendium Hungaricum',url:'https://stipendiumhungaricum.hu/',country:'Hungary',region:'Hungary'},
   // OTHER EUROPE
-  {name:'Erasmus Mundus',url:'https://erasmus-plus.ec.europa.eu/opportunities/opportunities-for-individuals/students/erasmus-mundus-joint-masters',country:'Europe',region:'Other Europe',cat:'europe'},
-  {name:'Swiss Government Excellence Scholarships',url:'https://www.sbfi.admin.ch/sbfi/en/home/education/scholarships-and-grants/swiss-government-excellence-scholarships.html',country:'Switzerland',region:'Other Europe',cat:'europe'},
-  {name:'Portugal Government Scholarship',url:'https://www.dges.gov.pt/en/pagina/scholarships-and-grants',country:'Portugal',region:'Other Europe',cat:'europe'},
-  {name:'Spain Scholarships MAEC-AECID',url:'https://www.aecid.es/en/becas-y-lectorados',country:'Spain',region:'Other Europe',cat:'europe'},
+  {name:'Erasmus Mundus',url:'https://erasmus-plus.ec.europa.eu/opportunities/opportunities-for-individuals/students/erasmus-mundus-joint-masters',country:'Europe',region:'Other Europe'},
+  {name:'Swiss Government Excellence',url:'https://www.sbfi.admin.ch/sbfi/en/home/education/scholarships-and-grants/swiss-government-excellence-scholarships.html',country:'Switzerland',region:'Other Europe'},
+  {name:'Spain AECID Scholarship',url:'https://www.aecid.es/en/becas-y-lectorados',country:'Spain',region:'Other Europe'},
+  {name:'Portugal Government Scholarship',url:'https://www.dges.gov.pt/en/pagina/scholarships-and-grants',country:'Portugal',region:'Other Europe'},
+  {name:'Czech Government Scholarship',url:'https://www.dzs.cz/en/funding-opportunities/scholarship-programmes/',country:'Czech Republic',region:'Other Europe'},
 ]
-
 const AFRICA_UNIS=[
-  {name:'University of Nairobi',url:'https://www.uonbi.ac.ke/',country:'Kenya',region:'East Africa',cat:'africa'},
-  {name:'Makerere University',url:'https://mak.ac.ug/',country:'Uganda',region:'East Africa',cat:'africa'},
-  {name:'University of Dar es Salaam',url:'https://www.udsm.ac.tz/',country:'Tanzania',region:'East Africa',cat:'africa'},
-  {name:'Aga Khan University EA',url:'https://www.aku.edu/admissions/Pages/scholarships.aspx',country:'Kenya',region:'East Africa',cat:'africa'},
-  {name:'USIU Africa',url:'https://www.usiu.ac.ke/admissions/scholarships/',country:'Kenya',region:'East Africa',cat:'africa'},
-  {name:'Strathmore University',url:'https://www.strathmore.edu/admission/scholarships/',country:'Kenya',region:'East Africa',cat:'africa'},
-  {name:'Addis Ababa University',url:'https://www.aau.edu.et/',country:'Ethiopia',region:'East Africa',cat:'africa'},
-  {name:'AIMS Tanzania',url:'https://aims.ac.tz/admissions',country:'Tanzania',region:'East Africa',cat:'africa'},
-  {name:'University of Cape Town',url:'https://www.uct.ac.za/main/apply/funding',country:'South Africa',region:'Southern Africa',cat:'africa'},
-  {name:'University of Witwatersrand',url:'https://www.wits.ac.za/fees-funding/scholarships/',country:'South Africa',region:'Southern Africa',cat:'africa'},
-  {name:'Stellenbosch University',url:'https://www.sun.ac.za/english/financial-aid/Pages/default.aspx',country:'South Africa',region:'Southern Africa',cat:'africa'},
-  {name:'University of Pretoria',url:'https://www.up.ac.za/financial-aid',country:'South Africa',region:'Southern Africa',cat:'africa'},
-  {name:'University of Zimbabwe',url:'https://www.uz.ac.zw/',country:'Zimbabwe',region:'Southern Africa',cat:'africa'},
-  {name:'University of Botswana',url:'https://www.ub.bw/',country:'Botswana',region:'Southern Africa',cat:'africa'},
-  {name:'University of Ghana',url:'https://www.ug.edu.gh/scholarships',country:'Ghana',region:'West Africa',cat:'africa'},
-  {name:'Ashesi University',url:'https://ashesi.edu.gh/admissions/financial-aid/',country:'Ghana',region:'West Africa',cat:'africa'},
-  {name:'Cairo University',url:'https://cu.edu.eg/',country:'Egypt',region:'North Africa',cat:'africa'},
-  {name:'Mohamed V University',url:'https://www.um5.ac.ma/',country:'Morocco',region:'North Africa',cat:'africa'},
-  {name:'African Development Bank',url:'https://www.afdb.org/en/topics-and-sectors/topics/youth-development/higher-education',country:'International',region:'Pan-African',cat:'africa'},
-  {name:'African Union Commission',url:'https://au.int/en/education',country:'International',region:'Pan-African',cat:'africa'},
-  {name:'Allan Gray Orbis',url:'https://www.allangrayorbis.org/fellowships/',country:'South Africa',region:'Pan-African',cat:'africa'},
-  {name:'Equity Wings to Fly',url:'https://equitygroupfoundation.com/wings-to-fly',country:'Kenya',region:'Pan-African',cat:'africa'},
-  {name:'Google Africa Scholarship',url:'https://buildyourfuture.withgoogle.com/scholarships',country:'International',region:'Pan-African',cat:'africa'},
-  {name:'Intra-Africa Academic Mobility',url:'https://intra-africa.eu/',country:'Africa',region:'Pan-African',cat:'africa'},
+  // EAST AFRICA
+  {name:'University of Nairobi',url:'https://www.uonbi.ac.ke/',country:'Kenya',region:'East Africa'},
+  {name:'Makerere University Uganda',url:'https://mak.ac.ug/',country:'Uganda',region:'East Africa'},
+  {name:'University of Dar es Salaam',url:'https://www.udsm.ac.tz/',country:'Tanzania',region:'East Africa'},
+  {name:'Aga Khan University EA',url:'https://www.aku.edu/admissions/Pages/scholarships.aspx',country:'Kenya',region:'East Africa'},
+  {name:'USIU Africa Kenya',url:'https://www.usiu.ac.ke/admissions/scholarships/',country:'Kenya',region:'East Africa'},
+  {name:'Strathmore University Kenya',url:'https://www.strathmore.edu/admission/scholarships/',country:'Kenya',region:'East Africa'},
+  {name:'Addis Ababa University',url:'https://www.aau.edu.et/',country:'Ethiopia',region:'East Africa'},
+  // SOUTHERN AFRICA
+  {name:'University of Cape Town',url:'https://www.uct.ac.za/main/apply/funding',country:'South Africa',region:'Southern Africa'},
+  {name:'University of Witwatersrand',url:'https://www.wits.ac.za/fees-funding/scholarships/',country:'South Africa',region:'Southern Africa'},
+  {name:'Stellenbosch University',url:'https://www.sun.ac.za/english/financial-aid/Pages/default.aspx',country:'South Africa',region:'Southern Africa'},
+  {name:'University of Pretoria',url:'https://www.up.ac.za/financial-aid',country:'South Africa',region:'Southern Africa'},
+  {name:'University of Botswana',url:'https://www.ub.bw/',country:'Botswana',region:'Southern Africa'},
+  // WEST AFRICA
+  {name:'University of Ghana',url:'https://www.ug.edu.gh/scholarships',country:'Ghana',region:'West Africa'},
+  {name:'Ashesi University Ghana',url:'https://ashesi.edu.gh/admissions/financial-aid/',country:'Ghana',region:'West Africa'},
+  // NORTH AFRICA
+  {name:'Cairo University Egypt',url:'https://cu.edu.eg/',country:'Egypt',region:'North Africa'},
+  {name:'Mohamed V University Morocco',url:'https://www.um5.ac.ma/',country:'Morocco',region:'North Africa'},
+  // PAN-AFRICAN
+  {name:'African Development Bank',url:'https://www.afdb.org/en/topics-and-sectors/topics/youth-development/higher-education',country:'International',region:'Pan-African'},
+  {name:'African Union Commission',url:'https://au.int/en/education',country:'International',region:'Pan-African'},
+  {name:'Mastercard Foundation Scholars',url:'https://mastercardfdn.org/all/scholars/',country:'International',region:'Pan-African'},
+  {name:'Allan Gray Orbis Foundation',url:'https://www.allangrayorbis.org/fellowships/',country:'South Africa',region:'Pan-African'},
+  {name:'Equity Wings to Fly',url:'https://equitygroupfoundation.com/wings-to-fly',country:'Kenya',region:'Pan-African'},
+  {name:'Google Africa Scholarship',url:'https://buildyourfuture.withgoogle.com/scholarships',country:'International',region:'Pan-African'},
+  {name:'Intra-Africa Academic Mobility',url:'https://intra-africa.eu/',country:'Africa',region:'Pan-African'},
 ]
-
 const RWANDA_UNIS=[
   // INTERNATIONAL UNIVERSITIES IN RWANDA
-  {name:'African Leadership University (ALU)',url:'https://alueducation.com/admissions/scholarships/',country:'Rwanda',region:'International University',cat:'rwanda'},
-  {name:'Carnegie Mellon University Africa',url:'https://africa.cmu.edu/admissions/financial-aid/',country:'Rwanda',region:'International University',cat:'rwanda'},
-  {name:'University of Global Health Equity',url:'https://www.ughe.org/admissions/scholarships/',country:'Rwanda',region:'International University',cat:'rwanda'},
-  {name:'AIMS Rwanda',url:'https://aims.ac.rw/admissions/',country:'Rwanda',region:'International University',cat:'rwanda'},
-  {name:'African Institute for Mathematical Sciences',url:'https://aims.ac.rw/',country:'Rwanda',region:'International University',cat:'rwanda'},
-  {name:'Kepler University Rwanda',url:'https://kepler.org/admissions/',country:'Rwanda',region:'International University',cat:'rwanda'},
+  {name:'African Leadership University ALU',url:'https://alueducation.com/admissions/scholarships/',country:'Rwanda',region:'International University'},
+  {name:'Carnegie Mellon University Africa',url:'https://africa.cmu.edu/admissions/financial-aid/',country:'Rwanda',region:'International University'},
+  {name:'University of Global Health Equity',url:'https://www.ughe.org/admissions/scholarships/',country:'Rwanda',region:'International University'},
+  {name:'AIMS Rwanda',url:'https://aims.ac.rw/admissions/',country:'Rwanda',region:'International University'},
+  {name:'Kepler University Rwanda',url:'https://kepler.org/admissions/',country:'Rwanda',region:'International University'},
+  {name:'African Institute of Management',url:'https://www.aim.ac.rw/',country:'Rwanda',region:'International University'},
   // PRIVATE UNIVERSITIES
-  {name:'University of Kigali',url:'https://www.uok.ac.rw/',country:'Rwanda',region:'Private University',cat:'rwanda'},
-  {name:'Kigali Independent University (ULK)',url:'https://www.ulk.ac.rw/',country:'Rwanda',region:'Private University',cat:'rwanda'},
-  {name:'Adventist University of Central Africa (AUCA)',url:'https://www.auca.ac.rw/',country:'Rwanda',region:'Private University',cat:'rwanda'},
-  {name:'Institut Catholique de Kabgayi (ICK)',url:'https://ick.ac.rw/',country:'Rwanda',region:'Private University',cat:'rwanda'},
-  {name:'Universite Libre de Kigali',url:'https://ulk.ac.rw/',country:'Rwanda',region:'Private University',cat:'rwanda'},
-  // GOVERNMENT & NGO
-  {name:'Rwanda Education Board (REB)',url:'https://www.reb.rw/',country:'Rwanda',region:'Government',cat:'rwanda'},
-  {name:'Higher Education Council Rwanda (HEC)',url:'https://www.hec.gov.rw/',country:'Rwanda',region:'Government',cat:'rwanda'},
-  {name:'Rwanda Presidential Scholarship',url:'https://www.presidency.gov.rw/',country:'Rwanda',region:'Government',cat:'rwanda'},
-  {name:'GIZ Rwanda Scholarships',url:'https://www.giz.de/en/worldwide/rwanda.html',country:'Rwanda',region:'NGO',cat:'rwanda'},
-  {name:'Mastercard Foundation Rwanda',url:'https://mastercardfdn.org/all/scholars/',country:'Rwanda',region:'NGO',cat:'rwanda'},
-  {name:'Rwanda Rotary Foundation',url:'https://www.rotary.org/en/our-programs/scholarships',country:'Rwanda',region:'NGO',cat:'rwanda'},
-  {name:'Jack Ma Africa Netpreneur',url:'https://www.africabusinessheroines.com/',country:'Rwanda',region:'NGO',cat:'rwanda'},
-  {name:'Tony Elumelu Foundation',url:'https://www.tonyelumelufoundation.org/',country:'Rwanda',region:'NGO',cat:'rwanda'},
+  {name:'University of Kigali UoK',url:'https://www.uok.ac.rw/',country:'Rwanda',region:'Private University'},
+  {name:'Kigali Independent University ULK',url:'https://www.ulk.ac.rw/',country:'Rwanda',region:'Private University'},
+  {name:'Adventist University AUCA',url:'https://www.auca.ac.rw/',country:'Rwanda',region:'Private University'},
+  {name:'Institut Catholique de Kabgayi',url:'https://ick.ac.rw/',country:'Rwanda',region:'Private University'},
+  // GOVERNMENT
+  {name:'Rwanda Education Board REB',url:'https://www.reb.rw/',country:'Rwanda',region:'Government'},
+  {name:'Higher Education Council HEC',url:'https://www.hec.gov.rw/',country:'Rwanda',region:'Government'},
+  // NGO
+  {name:'GIZ Rwanda',url:'https://www.giz.de/en/worldwide/rwanda.html',country:'Rwanda',region:'NGO'},
+  {name:'Tony Elumelu Foundation',url:'https://www.tonyelumelufoundation.org/',country:'Rwanda',region:'NGO'},
+  {name:'Jack Ma Africa Netpreneur',url:'https://www.africabusinessheroes.org/',country:'Rwanda',region:'NGO'},
 ]
-
 const ALL_UNIS=[...WORLD_UNIS,...EUROPE_UNIS,...AFRICA_UNIS,...RWANDA_UNIS]
 
-const PROXIES=[
-  {url:'https://api.allorigins.win/get?url=',parse:async r=>{try{const d=await r.json();return d.contents||''}catch(e){return ''}}},
-  {url:'https://corsproxy.io/?',parse:r=>r.text()},
-  {url:'https://api.codetabs.com/v1/proxy?quest=',parse:r=>r.text()},
-  {url:'https://thingproxy.freeboard.io/fetch/',parse:r=>r.text()}
-]
-
-// ══════════════════════════════════════════════
-// SUPABASE
-// ══════════════════════════════════════════════
-const {createClient}=supabase
-const db=createClient(SUPABASE_URL,SUPABASE_KEY)
-
-// ══════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════
-const todayStr=()=>new Date().toISOString().split('T')[0]
-const isFuture=d=>!d||d>=todayStr()
-const daysLeft=d=>{if(!d)return null;return Math.ceil((new Date(d)-new Date())/86400000)}
-const isEurope=r=>['Italy','Romania','Germany','France','Netherlands','Belgium','Sweden','Norway','Hungary','Czech Republic','Other Europe'].includes(r)
-const isRwanda=r=>['International University','Private University','Government','NGO'].includes(r)
-const isAfrica=r=>['East Africa','Southern Africa','West Africa','North Africa','Pan-African'].includes(r)
-
-// ══════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════
-function showPage(page,link){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
-  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'))
-  document.getElementById('page-'+page).classList.add('active')
-  if(link)link.classList.add('active')
-  if(page==='home'){loadStats();loadLatest();autoRemoveExpired()}
-  if(page==='scholarships')loadScholarships()
-  if(page==='europe')loadEurope()
-  if(page==='africa')loadAfrica()
-  if(page==='rwanda')loadRwanda()
-  if(page==='admin'){
-    if(localStorage.getItem('adm')==='1'){
-      document.getElementById('admin-login-section').style.display='none'
-      document.getElementById('admin-dashboard').style.display='block'
-      loadAdminScholarships('published')
-    }else{
-      document.getElementById('admin-login-section').style.display='block'
-      document.getElementById('admin-dashboard').style.display='none'
-    }
-  }
-}
-
-function showToast(msg){
-  const t=document.getElementById('toast')
-  t.textContent=msg;t.classList.add('show')
-  setTimeout(()=>t.classList.remove('show'),5000)
-}
-
-// ══════════════════════════════════════════════
-// STATS
-// ══════════════════════════════════════════════
-async function loadStats(){
-  const {count:tot}=await db.from('scholarships').select('*',{count:'exact',head:true}).eq('status','published')
-  const {data:all}=await db.from('scholarships').select('region').eq('status','published')
-  let afr=0,eu=0,rwa=0
-  if(all){all.forEach(s=>{if(isAfrica(s.region))afr++;else if(isEurope(s.region))eu++;else if(isRwanda(s.region))rwa++;})}
-  const {count:stu}=await db.from('students').select('*',{count:'exact',head:true})
-  if(tot!==null)document.getElementById('stat-total').textContent=tot
-  document.getElementById('stat-africa').textContent=afr
-  document.getElementById('stat-europe').textContent=eu
-  document.getElementById('stat-rwanda').textContent=rwa
-  if(stu!==null)document.getElementById('stat-students').textContent=stu
-}
-
-// ══════════════════════════════════════════════
-// AUTO REMOVE EXPIRED — runs every hour
-// ══════════════════════════════════════════════
-async function autoRemoveExpired(){
-  const t=todayStr()
-  const {data:exp}=await db.from('scholarships').select('id,title').eq('status','published').lt('deadline',t).not('deadline','is',null)
-  if(exp&&exp.length>0){
-    for(const s of exp)await db.from('scholarships').update({status:'expired'}).eq('id',s.id)
-    const a=document.getElementById('home-alert')
-    a.style.display='block'
-    a.textContent=`⚠️ ${exp.length} scholarship(s) reached their deadline and were automatically removed.`
-    setTimeout(()=>a.style.display='none',8000)
-    loadStats();loadLatest()
-  }
-  const nw=new Date();nw.setDate(nw.getDate()+7)
-  const {data:soon}=await db.from('scholarships').select('title').eq('status','published').gte('deadline',t).lte('deadline',nw.toISOString().split('T')[0]).not('deadline','is',null)
-  if(soon&&soon.length>0)showToast(`⏰ ${soon.length} scholarship(s) closing in 7 days — apply now!`)
-}
-
-async function removeExpired(){
-  const t=todayStr()
-  const {data}=await db.from('scholarships').update({status:'expired'}).eq('status','published').lt('deadline',t).not('deadline','is',null).select()
-  const cnt=data?data.length:0
-  document.getElementById('sc-rem').textContent=cnt
-  addLog(`🗑️ Removed ${cnt} expired scholarships`,'w')
-  showToast(`🗑️ Removed ${cnt} expired scholarships`)
-  loadAdminScholarships('published');loadStats()
-}
-
-// ══════════════════════════════════════════════
-// BUILD CARD — with official announcement
-// ══════════════════════════════════════════════
-function buildCard(s){
-  const card=document.createElement('div')
-  const dl=daysLeft(s.deadline)
-  const isUrg=dl!==null&&dl<=14
-  const isNew=s.created_at&&(Date.now()-new Date(s.created_at))<7*86400000
-  let cls='scard'
-  if(isAfrica(s.region))cls+=' africa'
-  else if(isEurope(s.region))cls+=' europe'
-  else if(isRwanda(s.region))cls+=' rwanda'
-  if(isUrg)cls+=' urgent'
-  card.className=cls
-
-  let dlTxt='📅 Open — No deadline',dlCls='tag tag-dl'
-  if(s.deadline){
-    if(dl<=0){dlTxt='❌ Expired';dlCls='tag tag-urg'}
-    else if(dl<=7){dlTxt=`🔴 ${dl} days left!`;dlCls='tag tag-urg'}
-    else if(dl<=14){dlTxt=`🟠 ${dl} days left`}
-    else dlTxt=`📅 Closes: ${new Date(s.deadline).toDateString()}`
-  }
-
-  let catBadge='b-int',catLabel=s.country||'International'
-  if(isAfrica(s.region)){catBadge='b-afr';}
-  else if(isEurope(s.region)){catBadge='b-eur';}
-  else if(isRwanda(s.region)){catBadge='b-rwa';catLabel='Rwanda';}
-
-  card.innerHTML=`
-    <div class="card-top">
-      <h3>${s.title}</h3>
-      <div class="badges">
-        <span class="badge ${catBadge}">${catLabel}</span>
-        <span class="badge b-free">FREE</span>
-        ${isNew?'<span class="badge b-new">NEW</span>':''}
-        ${isUrg?'<span class="badge b-urg">URGENT</span>':''}
-      </div>
-    </div>
-    <p class="desc">${s.description||'Full free scholarship for Rwandan students. Click Apply Now for details.'}</p>
-    <div class="tags-row">
-      <span class="tag">🎓 ${s.level||'Any level'}</span>
-      <span class="tag ${isEurope(s.region)?'tag-eu':''}">📍 ${s.region||'International'}</span>
-      <span class="${dlCls}">${dlTxt}</span>
-      <span class="tag tag-free">💰 100% Free</span>
-    </div>
-    <div class="card-btns">
-      <a href="${s.link||'#'}" target="_blank" class="apply-btn" onclick="trackApply('${s.id}')">Apply Now →</a>
-      <button onclick="toggleAnn('${s.id}')" class="show-ann-btn" title="Show official announcement">📢 Official Announcement</button>
-      <button onclick="saveSch('${s.id}')" class="save-btn" title="Save">🔖</button>
-    </div>
-    <div class="ann-panel" id="ann-${s.id}">
-      <h5>📢 Official Announcement from ${s.title}</h5>
-      <div class="ann-text" id="ann-text-${s.id}">
-        ${s.announcement?s.announcement:'<span class="ann-loading">Loading official announcement...</span>'}
-      </div>
-      <p class="ann-source">Source: <a href="${s.link||'#'}" target="_blank" style="color:var(--blue)">${s.link||s.title}</a></p>
-    </div>`
-  return card
-}
-
-// Toggle official announcement panel
-function toggleAnn(id){
-  const panel=document.getElementById('ann-'+id)
-  const isVisible=panel.style.display==='block'
-  panel.style.display=isVisible?'none':'block'
-  if(!isVisible){
-    const textEl=document.getElementById('ann-text-'+id)
-    if(textEl.querySelector('.ann-loading')){
-      fetchAnnouncement(id,textEl)
-    }
-  }
-}
-
-async function fetchAnnouncement(id,textEl){
-  const {data:s}=await db.from('scholarships').select('link,announcement,title').eq('id',id).single()
-  if(s&&s.announcement){textEl.textContent=s.announcement;return}
-  if(!s||!s.link){textEl.textContent='Official announcement not available. Please visit the scholarship website directly.';return}
-
-  textEl.innerHTML='<span class="ann-loading">Fetching official announcement from institution website...</span>'
-
-  // Try to fetch the page
-  let html=''
-  for(const proxy of PROXIES){
-    try{
-      const ctrl=new AbortController()
-      const t=setTimeout(()=>ctrl.abort(),8000)
-      const res=await fetch(proxy.url+encodeURIComponent(s.link),{signal:ctrl.signal})
-      clearTimeout(t)
-      if(res.ok){html=await proxy.parse(res);if(html.length>300)break}
-    }catch(e){continue}
-  }
-
-  if(!html){
-    // Use Groq knowledge
-    try{
-      const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:`Write the official scholarship announcement for ${s.title}. Include: eligibility, what is covered, how to apply, deadline. Keep it under 150 words. Write as if it is the official text from the institution.`}],max_tokens:200,temperature:0.2})
-      })
-      const data=await res.json()
-      const ann=data.choices?.[0]?.message?.content||'Please visit the official website for details.'
-      textEl.textContent=ann
-      await db.from('scholarships').update({announcement:ann}).eq('id',id)
-    }catch(e){textEl.textContent='Please visit the official scholarship website for the full announcement.'}
-    return
-  }
-
-  // Extract announcement from page using Groq
-  const text=html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().substring(0,1500)
-  try{
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:`Extract the official scholarship announcement from this webpage of ${s.title}. Include: who can apply, what is covered (tuition/living/flights), deadline, how to apply. Keep it clear and under 150 words. Text: ${text.substring(0,800)}`}],max_tokens:200,temperature:0.1})
-    })
-    const data=await res.json()
-    const ann=data.choices?.[0]?.message?.content||'Please visit the official website for details.'
-    textEl.textContent=ann
-    await db.from('scholarships').update({announcement:ann}).eq('id',id)
-  }catch(e){textEl.textContent='Please visit the official scholarship website for the full announcement.'}
-}
-
-async function trackApply(id){
-  await db.from('applications').insert({scholarship_id:id,status:'clicked'}).catch(()=>{})
-}
-
-async function saveSch(id){
-  const email=localStorage.getItem('stu_email')
-  if(!email){showToast('Please register first!');showPage('register',null);return}
-  const {data:st}=await db.from('students').select('id').eq('email',email).single()
-  if(st){
-    const {error}=await db.from('saved_scholarships').insert({student_id:st.id,scholarship_id:id})
-    error?showToast('Already saved!'):showToast('✅ Scholarship saved!')
-  }
-}
-
-// ══════════════════════════════════════════════
-// LATEST (HOME)
-// ══════════════════════════════════════════════
-async function loadLatest(){
-  const {data}=await db.from('scholarships').select('*').eq('status','published').order('created_at',{ascending:false}).limit(8)
-  const c=document.getElementById('latest-list')
-  c.innerHTML=''
-  if(!data||!data.length){c.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No scholarships yet. Admin will add them soon!</p>';return}
-  data.forEach(s=>c.appendChild(buildCard(s)))
-}
-
-// ══════════════════════════════════════════════
-// WORLD SCHOLARSHIPS
-// ══════════════════════════════════════════════
-let allSch=[]
-async function loadScholarships(){
-  document.getElementById('loading').style.display='block'
-  document.getElementById('scholarships-list').innerHTML=''
-  document.getElementById('no-results').style.display='none'
-  const {data}=await db.from('scholarships').select('*').eq('status','published').not('region','in','("Italy","Romania","Germany","France","Netherlands","Belgium","Sweden","Norway","Hungary","Czech Republic","Other Europe","East Africa","Southern Africa","West Africa","North Africa","Pan-African","International University","Private University","Government","NGO")').order('deadline',{ascending:true,nullsFirst:false})
-  document.getElementById('loading').style.display='none'
-  allSch=data||[]
-  displaySch(allSch)
-}
-
-function displaySch(list){
-  const c=document.getElementById('scholarships-list'),nr=document.getElementById('no-results')
-  c.innerHTML='';if(!list||!list.length){nr.style.display='block';return}
-  nr.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
-}
-
-function filterSch(){
-  const q=document.getElementById('search').value.toLowerCase()
-  const co=document.getElementById('filter-country').value
-  const lv=document.getElementById('filter-level').value
-  const so=document.getElementById('filter-sort').value
-  let list=allSch.filter(s=>(!q||s.title.toLowerCase().includes(q)||(s.description||'').toLowerCase().includes(q))&&(!co||s.country===co)&&(!lv||s.level===lv))
-  if(so==='newest')list=[...list].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
-  displaySch(list)
-}
-document.getElementById('search').addEventListener('input',filterSch)
-document.getElementById('filter-country').addEventListener('change',filterSch)
-document.getElementById('filter-level').addEventListener('change',filterSch)
-document.getElementById('filter-sort').addEventListener('change',filterSch)
-
-// ══════════════════════════════════════════════
-// EUROPE
-// ══════════════════════════════════════════════
-let allEu=[]
-async function loadEurope(){
-  const euRegions=['Italy','Romania','Germany','France','Netherlands','Belgium','Sweden','Norway','Hungary','Czech Republic','Other Europe']
-  const {data}=await db.from('scholarships').select('*').eq('status','published').in('region',euRegions).order('deadline',{ascending:true,nullsFirst:false})
-  allEu=data||[];displayEu(allEu)
-}
-function filterEurope(r,btn){
-  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
-  displayEu(r==='all'?allEu:allEu.filter(s=>s.region===r))
-}
-function displayEu(list){
-  const c=document.getElementById('europe-list'),e=document.getElementById('europe-empty')
-  c.innerHTML='';if(!list||!list.length){e.style.display='block';return}
-  e.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
-}
-
-// ══════════════════════════════════════════════
-// AFRICA
-// ══════════════════════════════════════════════
-let allAfr=[]
-async function loadAfrica(){
-  const afrRegions=['East Africa','Southern Africa','West Africa','North Africa','Pan-African']
-  const {data}=await db.from('scholarships').select('*').eq('status','published').in('region',afrRegions).order('deadline',{ascending:true,nullsFirst:false})
-  allAfr=data||[];displayAfr(allAfr)
-}
-function filterAfrica(r,btn){
-  document.querySelectorAll('#page-africa .rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
-  displayAfr(r==='all'?allAfr:allAfr.filter(s=>s.region===r))
-}
-function displayAfr(list){
-  const c=document.getElementById('africa-list'),e=document.getElementById('africa-empty')
-  c.innerHTML='';if(!list||!list.length){e.style.display='block';return}
-  e.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
-}
-
-// ══════════════════════════════════════════════
-// RWANDA
-// ══════════════════════════════════════════════
-let allRwa=[]
-async function loadRwanda(){
-  const rwaRegions=['International University','Private University','Government','NGO']
-  const {data}=await db.from('scholarships').select('*').eq('status','published').in('region',rwaRegions).order('deadline',{ascending:true,nullsFirst:false})
-  allRwa=data||[];displayRwa(allRwa)
-}
-function filterRwanda(r,btn){
-  document.querySelectorAll('#page-rwanda .rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
-  displayRwa(r==='all'?allRwa:allRwa.filter(s=>s.region===r))
-}
-function displayRwa(list){
-  const c=document.getElementById('rwanda-list'),e=document.getElementById('rwanda-empty')
-  c.innerHTML='';if(!list||!list.length){e.style.display='block';return}
-  e.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
-}
-
-// ══════════════════════════════════════════════
-// REGISTER
-// ══════════════════════════════════════════════
-async function registerStudent(){
-  const name=document.getElementById('reg-name').value.trim()
-  const email=document.getElementById('reg-email').value.trim()
-  if(!name||!email){showToast('Please fill name and email!');return}
-  const {error}=await db.from('students').insert({full_name:name,email,phone:document.getElementById('reg-phone').value.trim(),education_level:document.getElementById('reg-edu').value,field_of_study:document.getElementById('reg-field').value.trim(),nationality:'Rwandan',email_alerts:true})
-  if(error){error.code==='23505'?showToast('Email already registered!'):showToast('Error: '+error.message);return}
-  localStorage.setItem('stu_email',email)
-  document.getElementById('reg-ok').style.display='block'
-  showToast('🎉 Welcome '+name+'!');loadStats()
-}
-
-// ══════════════════════════════════════════════
-// ADMIN
-// ══════════════════════════════════════════════
-function adminLogin(){
-  if(document.getElementById('admin-pass').value===ADMIN_PASS){
-    localStorage.setItem('adm','1')
-    document.getElementById('admin-login-section').style.display='none'
-    document.getElementById('admin-dashboard').style.display='block'
-    loadAdminScholarships('published')
-    showToast('✅ Welcome Admin!')
-  }else showToast('❌ Wrong password!')
-}
-function adminLogout(){
-  localStorage.removeItem('adm')
-  document.getElementById('admin-login-section').style.display='block'
-  document.getElementById('admin-dashboard').style.display='none'
-  document.getElementById('admin-pass').value=''
-  showToast('🔒 Logged out')
-}
-function showTab(tab,btn){
-  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
-  document.getElementById('tab-published').style.display=tab==='published'?'block':'none'
-  document.getElementById('tab-expired').style.display=tab==='expired'?'block':'none'
-  loadAdminScholarships(tab)
-}
-async function loadAdminScholarships(status){
-  const {data,count}=await db.from('scholarships').select('*',{count:'exact'}).eq('status',status).order('created_at',{ascending:false})
-  const cntEl=document.getElementById('cnt-'+status.substring(0,3));if(cntEl)cntEl.textContent=count||0
-  const c=document.getElementById(status+'-list');if(!c)return;c.innerHTML=''
-  if(!data||!data.length){c.innerHTML=`<p style="color:var(--muted);text-align:center;padding:40px">No ${status} scholarships</p>`;return}
-  data.forEach(s=>{
-    const card=document.createElement('div');card.className='acard'
-    const dl=daysLeft(s.deadline)
-    card.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-        <h4>${s.title}</h4>
-        <span class="sbadge sb-${status}">${status}</span>
-      </div>
-      <p>🌍 ${s.country||'?'} | 🎓 ${s.level||'Any'} | 📅 ${s.deadline||'Open'}${dl!==null?' ('+dl+' days left)':''} | 📍 ${s.region||'International'}</p>
-      <p style="font-size:12px;color:var(--muted);margin-top:4px">${s.description||''}</p>
-      <p style="margin-top:4px"><a href="${s.link}" target="_blank" style="color:var(--blue);font-size:12px;word-break:break-all">${s.link||'No link'}</a></p>
-      ${s.announcement?`<p style="font-size:11px;color:#374151;background:#f8f9fe;padding:6px 10px;border-radius:6px;margin-top:6px">${s.announcement.substring(0,120)}...</p>`:''}
-      <p style="font-size:11px;color:var(--muted);margin-top:4px">Source: ${s.source||'?'} | Added: ${new Date(s.created_at).toDateString()}</p>
-      <div class="acard-btns">
-        <button class="ab ab-rem" onclick="removeSch('${s.id}')">🗑️ Remove</button>
-      </div>`
-    c.appendChild(card)
-  })
-}
-async function removeSch(id){
-  if(!confirm('Remove this scholarship?'))return
-  await db.from('scholarships').update({status:'expired'}).eq('id',id)
-  showToast('🗑️ Removed.');loadAdminScholarships('published');loadStats()
-}
-async function addManual(){
-  const title=document.getElementById('m-title').value.trim()
-  const country=document.getElementById('m-country').value.trim()
-  const deadline=document.getElementById('m-deadline').value
-  const link=document.getElementById('m-link').value.trim()
-  const region=document.getElementById('m-region').value
-  if(!title||!country||!link||!deadline){showToast('Please fill all required fields!');return}
-  if(!isFuture(deadline)){showToast('❌ Deadline has already passed!');return}
-  const {error}=await db.from('scholarships').insert({
-    title,country,deadline,level:document.getElementById('m-level').value,link,
-    description:document.getElementById('m-desc').value.trim(),
-    announcement:document.getElementById('m-announcement').value.trim()||null,
-    region,is_africa:isAfrica(region),is_free:true,status:'published',source:'Manual'
-  })
-  if(error){showToast('Error: '+error.message);return}
-  showToast('✅ Free scholarship published instantly!')
-  ;['m-title','m-country','m-deadline','m-link','m-desc','m-announcement'].forEach(id=>document.getElementById(id).value='')
-  loadAdminScholarships('published');loadStats()
-}
-
-// ══════════════════════════════════════════════
-// ⚡ INSTANT PUSH
-// ══════════════════════════════════════════════
-let pushData=null
-async function instantPush(){
-  const url=document.getElementById('push-url').value.trim()
-  if(!url||!url.startsWith('http')){showToast('Please paste a valid URL!');return}
-  const btn=document.getElementById('push-btn')
-  btn.disabled=true;btn.textContent='⏳ Extracting...'
-  showToast('🤖 Groq AI is reading the scholarship page...')
-  let html=''
-  for(const proxy of PROXIES){
-    try{
-      const ctrl=new AbortController()
-      const t=setTimeout(()=>ctrl.abort(),8000)
-      const res=await fetch(proxy.url+encodeURIComponent(url),{signal:ctrl.signal})
-      clearTimeout(t)
-      if(res.ok){html=await proxy.parse(res);if(html.length>300)break}
-    }catch(e){continue}
-  }
-  const text=html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().substring(0,2000)
-  const prompt=`Analyze the scholarship page at ${url}. Extract ALL details.
-CRITICAL: Only extract if this is FREE (no tuition fees, fully funded). If paid set is_free:false.
-Also extract the official announcement text (150 words max).
-Reply ONLY in JSON:
-{"is_scholarship":true,"is_free":true,"title":"exact name","country":"country","deadline":"YYYY-MM-DD or null","level":"bachelor or master or phd or any","link":"direct apply URL","description":"what is covered","region":"Italy or Romania or Germany or France or Netherlands or Belgium or Sweden or Norway or Hungary or Czech Republic or Other Europe or East Africa or Southern Africa or West Africa or North Africa or Pan-African or International University or Private University or Government or NGO or International","announcement":"official announcement text 100-150 words","is_africa":false}
-OR if paid or not scholarship: {"is_scholarship":false}
-Content: ${text.substring(0,1200)}`
-  try{
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:500,temperature:0.1})})
-    const data=await res.json()
-    const raw=data.choices?.[0]?.message?.content||'{}'
-    const clean=raw.replace(/```json|```/g,'').trim()
-    let ext;try{ext=JSON.parse(clean)}catch(e){const m=clean.match(/\{[\s\S]*\}/);ext=m?JSON.parse(m[0]):{is_scholarship:false}}
-    pushData=ext
-    document.getElementById('push-title').value=ext.title||''
-    document.getElementById('push-country').value=ext.country||''
-    document.getElementById('push-deadline').value=ext.deadline||''
-    document.getElementById('push-level').value=ext.level||'any'
-    document.getElementById('push-link').value=ext.link||url
-    document.getElementById('push-desc').value=ext.description||''
-    document.getElementById('push-announcement').value=ext.announcement||''
-    document.getElementById('push-is-free').checked=ext.is_free!==false
-    if(ext.region)document.getElementById('push-region').value=ext.region
-    document.getElementById('push-preview').style.display='block'
-    if(!ext.is_scholarship)showToast('⚠️ AI did not find a scholarship. Check details manually.')
-    else if(!ext.is_free)showToast('⚠️ This may be a PAID scholarship. Uncheck FREE if so.')
-    else showToast('✅ Free scholarship extracted! Review and confirm.')
-  }catch(e){
-    showToast('⚠️ Could not read page — fill details manually.')
-    document.getElementById('push-link').value=url
-    document.getElementById('push-preview').style.display='block'
-  }
-  btn.disabled=false;btn.textContent='⚡ Extract & Push'
-}
-
-async function confirmPush(){
-  const title=document.getElementById('push-title').value.trim()
-  const country=document.getElementById('push-country').value.trim()
-  const deadline=document.getElementById('push-deadline').value
-  const link=document.getElementById('push-link').value.trim()
-  const isFree=document.getElementById('push-is-free').checked
-  const region=document.getElementById('push-region').value
-  if(!title||!country||!link){showToast('Please fill Title, Country and Link!');return}
-  if(!deadline){showToast('❌ Deadline is required!');return}
-  if(!isFuture(deadline)){showToast('❌ Deadline has already passed!');return}
-  if(!isFree){showToast('❌ Only FREE scholarships are allowed!');return}
-  const {error}=await db.from('scholarships').insert({
-    title,country,deadline,level:document.getElementById('push-level').value,link,
-    description:document.getElementById('push-desc').value.trim(),
-    announcement:document.getElementById('push-announcement').value.trim()||null,
-    region,is_africa:isAfrica(region),is_free:true,status:'published',source:'Instant Push'
-  })
-  if(error){showToast('Error: '+error.message);return}
-  showToast('🎓 Free scholarship published instantly!')
-  document.getElementById('push-url').value='';document.getElementById('push-preview').style.display='none';pushData=null
-  loadAdminScholarships('published');loadLatest();loadStats()
-}
-
-function cancelPush(){
-  document.getElementById('push-preview').style.display='none'
-  document.getElementById('push-url').value='';pushData=null
-}
-
-// ══════════════════════════════════════════════
-// AI SCANNER
-// ══════════════════════════════════════════════
+// ================================================
+// YOUR PYTHON API replaces Groq + proxies
+// ================================================
 let scChk=0,scPub=0,scSkip=0,scBlk=0,scRem=0
 function addLog(msg,type='i'){
   const log=document.getElementById('scan-log')
   const el=document.createElement('div');el.className='li l'+type
-  el.textContent=new Date().toLocaleTimeString()+' — '+msg
+  el.textContent=new Date().toLocaleTimeString()+' - '+msg
   log.appendChild(el);log.scrollTop=log.scrollHeight
 }
 function updateSc(){
@@ -1198,131 +611,63 @@ function updateSc(){
   document.getElementById('sc-blk').textContent=scBlk
   document.getElementById('sc-rem').textContent=scRem
 }
-async function fetchPage(url){
-  for(const proxy of PROXIES){
-    try{
-      const ctrl=new AbortController()
-      const t=setTimeout(()=>ctrl.abort(),8000)
-      const res=await fetch(proxy.url+encodeURIComponent(url),{signal:ctrl.signal})
-      clearTimeout(t);if(!res.ok)continue
-      const html=await proxy.parse(res)
-      if(html&&html.length>300)return html
-    }catch(e){continue}
-  }
-  return null
-}
-function cleanHtml(html){
-  return html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim().substring(0,1200)
-}
-async function groqAnalyze(text,uni){
-  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-    body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:`Analyze this text from ${uni.name} (${uni.country}, ${uni.region}).
-Is there a FREE scholarship for Rwandan or African students?
-FREE = no tuition, fully funded, no application fees.
-IMPORTANT: Only say is_scholarship:true if deadline is in the FUTURE or not mentioned.
-If deadline has passed, say is_scholarship:false.
-Reply ONLY in JSON:
-{"is_scholarship":true,"is_free":true,"title":"name","country":"${uni.country}","deadline":"YYYY-MM-DD or null","link":"direct apply URL or ${uni.url}","description":"what is covered","level":"bachelor or master or phd or any","region":"${uni.region}","announcement":"50-80 word official announcement text","is_africa":${isAfrica(uni.region)}}
-OR if paid/expired/none: {"is_scholarship":false}
-Text: ${text.substring(0,800)}`}],max_tokens:350,temperature:0.1})
-  })
-  const data=await res.json()
-  if(data.error)throw new Error(data.error.message)
-  const raw=data.choices?.[0]?.message?.content||'{"is_scholarship":false}'
-  const clean=raw.replace(/```json|```/g,'').trim()
-  try{return JSON.parse(clean)}catch(e){const m=clean.match(/\{[\s\S]*\}/);return m?JSON.parse(m[0]):{is_scholarship:false}}
-}
-async function groqKnowledge(uni){
-  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-    body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:`Does ${uni.name} in ${uni.country} offer FREE fully-funded scholarships for Rwandan or African students currently open in 2025-2026?
-Only say yes if confident the scholarship EXISTS and deadline has NOT passed.
-Reply ONLY in JSON:
-{"is_scholarship":true,"is_free":true,"title":"name","country":"${uni.country}","deadline":"YYYY-MM-DD or null","link":"${uni.url}","description":"what is covered","level":"bachelor or master or phd or any","region":"${uni.region}","announcement":"official scholarship announcement 60 words","is_africa":${isAfrica(uni.region)}}
-OR: {"is_scholarship":false}`}],max_tokens:300,temperature:0.1})
-  })
-  const data=await res.json()
-  if(data.error)return{is_scholarship:false}
-  const raw=data.choices?.[0]?.message?.content||'{"is_scholarship":false}'
-  const clean=raw.replace(/```json|```/g,'').trim()
-  try{return JSON.parse(clean)}catch(e){return{is_scholarship:false}}
-}
-async function saveToDB(result,uni){
-  // STRICT VALIDATION
-  if(!result.is_free){return'paid'}
-  if(result.deadline&&!isFuture(result.deadline)){return'expired'}
-  // Check duplicate
-  const {data:ex}=await db.from('scholarships').select('id').ilike('title',result.title).limit(1)
-  if(ex&&ex.length>0)return'duplicate'
-  const {error}=await db.from('scholarships').insert({
-    title:(result.title||uni.name+' Scholarship').substring(0,200),
-    description:(result.description||'').substring(0,500),
-    deadline:result.deadline||null,
-    country:result.country||uni.country,
-    level:result.level||'any',
-    link:(result.link||uni.url).substring(0,500),
-    region:result.region||uni.region||'International',
-    announcement:result.announcement||null,
-    is_africa:isAfrica(result.region||uni.region),
-    is_free:true,
-    status:'published', // INSTANT PUBLISH ✅
-    source:uni.name
-  })
-  return error?'error':'saved'
-}
 
 async function runScanner(mode='all'){
   scChk=0;scPub=0;scSkip=0;scBlk=0;scRem=0;updateSc()
   document.getElementById('scan-log').innerHTML=''
   document.getElementById('pbar').style.width='0%'
   ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true})
-  await removeExpired()
-  let unis=ALL_UNIS
-  if(mode==='europe')unis=EUROPE_UNIS
-  else if(mode==='africa')unis=AFRICA_UNIS
-  else if(mode==='rwanda')unis=RWANDA_UNIS
-  addLog(`🚀 Scanning ${unis.length} sources — FREE scholarships with future deadlines only`,'i')
-  addLog('✅ Groq AI active — including official announcements','s')
-  for(let i=0;i<unis.length;i++){
-    const uni=unis[i]
-    document.getElementById('pbar').style.width=Math.round(((i+1)/unis.length)*100)+'%'
-    scChk++;updateSc()
-    addLog(`[${i+1}/${unis.length}] ${uni.name} (${uni.country} — ${uni.region})`,'i')
-    try{
-      const html=await fetchPage(uni.url)
-      let result
-      if(!html){
-        scBlk++;updateSc()
-        addLog(`⚠️ Blocked — using AI knowledge for ${uni.name}`,'w')
-        result=await groqKnowledge(uni)
-      }else{
-        result=await groqAnalyze(cleanHtml(html),uni)
-      }
-      if(result?.is_scholarship){
-        const r=await saveToDB(result,uni)
-        if(r==='saved'){scPub++;updateSc();addLog(`✅ PUBLISHED: ${result.title}`,'s')}
-        else if(r==='paid'){scSkip++;updateSc();addLog(`💰 SKIPPED (paid): ${result.title}`,'w')}
-        else if(r==='expired'){scSkip++;updateSc();addLog(`⏰ SKIPPED (expired deadline): ${result.title}`,'w')}
-        else if(r==='duplicate'){addLog(`Already exists: ${result.title}`,'i')}
-        else addLog(`Error saving ${result.title}`,'e')
-      }else{
-        addLog(`No free open scholarship at ${uni.name}`,'i')
-      }
-    }catch(e){addLog(`❌ Error: ${uni.name} — ${e.message}`,'e')}
-    await new Promise(r=>setTimeout(r,1500))
+
+  addLog('Triggering Python API scan...','i')
+  addLog('Your API scrapes 77 sources with real Chrome browser','i')
+
+  try{
+    const res=await fetch(API_URL+'/scrape',{
+      method:'POST',
+      headers:{'x-api-key':API_KEY,'Content-Type':'application/json'}
+    })
+
+    if(res.ok){
+      const data=await res.json()
+      addLog('Scan started on server! This takes about 10 minutes.','s')
+      addLog('Your Supabase will update automatically as scholarships are found','i')
+      document.getElementById('pbar').style.width='20%'
+
+      let polls=0
+      const poll=setInterval(async()=>{
+        polls++
+        document.getElementById('pbar').style.width=Math.min(20+(polls*8),90)+'%'
+        addLog('Checking for new scholarships... ('+polls*30+'s elapsed)','i')
+        await loadAdminScholarships('published')
+        const {count}=await db.from('scholarships').select('*',{count:'exact',head:true}).eq('status','published')
+        if(count)addLog('Currently '+count+' active scholarships in database','s')
+        if(polls>=20){
+          clearInterval(poll)
+          document.getElementById('pbar').style.width='100%'
+          addLog('Scan complete! Check your scholarship pages for new results.','s')
+          ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
+          loadStats();loadLatest()
+          showToast('Scan complete! New scholarships added.')
+        }
+      },30000)
+
+    }else{
+      const err=await res.text()
+      addLog('API error: '+err,'e')
+      addLog('Make sure your API is running at: '+API_URL,'w')
+      ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
+    }
+  }catch(e){
+    addLog('Cannot reach API: '+e.message,'e')
+    addLog('API URL: '+API_URL,'w')
+    addLog('Make sure your Render deployment is running','w')
+    ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
   }
-  document.getElementById('pbar').style.width='100%'
-  addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','i')
-  addLog(`✅ DONE! Published:${scPub} | Paid/Expired:${scSkip} | Blocked:${scBlk} | Removed:${scRem}`,'s')
-  ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
-  if(scPub>0){showToast(`🎓 ${scPub} free scholarships published!`);loadAdminScholarships('published');loadStats()}
-  else showToast('Scan complete. No new free open scholarships found.')
 }
 
-// ══════════════════════════════════════════════
-// REAL TIME UPDATES
-// ══════════════════════════════════════════════
+// ════════════════════════════════
+// REAL TIME — updates instantly
+// ════════════════════════════════
 db.channel('live')
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'scholarships',filter:'status=eq.published'},
     payload=>{
@@ -1352,8 +697,6 @@ db.channel('live')
 // AUTO CHECK EVERY HOUR
 autoRemoveExpired()
 setInterval(autoRemoveExpired,3600000)
-
-// START
 loadStats();loadLatest()
 </script>
 </body>
