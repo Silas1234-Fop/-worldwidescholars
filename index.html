@@ -482,7 +482,7 @@ footer a{color:white;text-decoration:none;}
 const SUPABASE_URL='https://djmnjznfdklfvqnfxfaw.supabase.co'
 const SUPABASE_KEY='sb_publishable_LKiXksepfT-qGY5EPns2Uw_BKmugH_7'
 const API_URL='https://scholarship-api.onrender.com'
-const API_KEY='change-this-secret-key'
+const API_KEY='change-this-secret-key' 
 const ADMIN_PASS='worldwidescholars2026'
 
 // ════════════════════════════════
@@ -594,14 +594,526 @@ const RWANDA_UNIS=[
 ]
 const ALL_UNIS=[...WORLD_UNIS,...EUROPE_UNIS,...AFRICA_UNIS,...RWANDA_UNIS]
 
-// ================================================
-// YOUR PYTHON API replaces Groq + proxies
-// ================================================
+// 4 CORS proxies — tries each until one works
+
+
+// ════════════════════════════════
+// SUPABASE INIT
+// ════════════════════════════════
+const {createClient}=supabase
+const db=createClient(SUPABASE_URL,SUPABASE_KEY)
+
+// ════════════════════════════════
+// HELPERS
+// ════════════════════════════════
+const todayStr=()=>new Date().toISOString().split('T')[0]
+const isFuture=d=>!d||d>=todayStr()
+const daysLeft=d=>{if(!d)return null;return Math.ceil((new Date(d)-new Date())/86400000)}
+const isEurope=r=>['Italy','Romania','Germany','France','Netherlands','Belgium','Sweden','Norway','Hungary','Other Europe'].includes(r)
+const isAfrica=r=>['East Africa','Southern Africa','West Africa','North Africa','Pan-African'].includes(r)
+const isRwanda=r=>['International University','Private University','Government','NGO'].includes(r)
+
+// ════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════
+function showPage(page,link){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'))
+  document.getElementById('page-'+page).classList.add('active')
+  if(link)link.classList.add('active')
+  if(page==='home'){loadStats();loadLatest();autoRemoveExpired()}
+  if(page==='scholarships')loadScholarships()
+  if(page==='europe')loadEurope()
+  if(page==='africa')loadAfrica()
+  if(page==='rwanda')loadRwanda()
+  if(page==='admin'){
+    if(localStorage.getItem('adm')==='1'){
+      document.getElementById('admin-login-section').style.display='none'
+      document.getElementById('admin-dashboard').style.display='block'
+      loadAdminScholarships('published')
+    }else{
+      document.getElementById('admin-login-section').style.display='block'
+      document.getElementById('admin-dashboard').style.display='none'
+    }
+  }
+}
+function showToast(msg){
+  const t=document.getElementById('toast')
+  t.textContent=msg;t.classList.add('show')
+  setTimeout(()=>t.classList.remove('show'),5000)
+}
+
+// ════════════════════════════════
+// STATS
+// ════════════════════════════════
+async function loadStats(){
+  const {count:tot}=await db.from('scholarships').select('*',{count:'exact',head:true}).eq('status','published')
+  const {data:all}=await db.from('scholarships').select('region').eq('status','published')
+  let eu=0,afr=0,rwa=0
+  if(all)all.forEach(s=>{if(isEurope(s.region))eu++;else if(isAfrica(s.region))afr++;else if(isRwanda(s.region))rwa++;})
+  const {count:stu}=await db.from('students').select('*',{count:'exact',head:true})
+  if(tot!==null)document.getElementById('stat-total').textContent=tot
+  document.getElementById('stat-europe').textContent=eu
+  document.getElementById('stat-africa').textContent=afr
+  document.getElementById('stat-rwanda').textContent=rwa
+  if(stu!==null)document.getElementById('stat-students').textContent=stu
+}
+
+// ════════════════════════════════
+// AUTO REMOVE EXPIRED — runs hourly
+// ════════════════════════════════
+async function autoRemoveExpired(){
+  const t=todayStr()
+  const {data:exp}=await db.from('scholarships').select('id,title').eq('status','published').lt('deadline',t).not('deadline','is',null)
+  if(exp&&exp.length>0){
+    for(const s of exp)await db.from('scholarships').update({status:'expired'}).eq('id',s.id)
+    const a=document.getElementById('home-alert')
+    a.style.display='block'
+    a.textContent=`⚠️ ${exp.length} scholarship(s) reached their deadline and were removed automatically.`
+    setTimeout(()=>a.style.display='none',8000)
+    loadStats();loadLatest()
+  }
+  const nw=new Date();nw.setDate(nw.getDate()+7)
+  const {data:soon}=await db.from('scholarships').select('title').eq('status','published').gte('deadline',t).lte('deadline',nw.toISOString().split('T')[0]).not('deadline','is',null)
+  if(soon&&soon.length>0)showToast(`⏰ ${soon.length} scholarship(s) closing within 7 days!`)
+}
+async function removeExpired(){
+  const t=todayStr()
+  const {data}=await db.from('scholarships').update({status:'expired'}).eq('status','published').lt('deadline',t).not('deadline','is',null).select()
+  const cnt=data?data.length:0
+  document.getElementById('sc-rem').textContent=cnt
+  addLog(`🗑️ Removed ${cnt} expired scholarships`,'w')
+  showToast(`🗑️ Removed ${cnt} expired`)
+  loadAdminScholarships('published');loadStats()
+}
+
+// ════════════════════════════════
+// BUILD CARD — clean design, no ribbon
+// ════════════════════════════════
+function buildCard(s){
+  const card=document.createElement('div')
+  const dl=daysLeft(s.deadline)
+  const isUrg=dl!==null&&dl<=14
+  const isNew=s.created_at&&(Date.now()-new Date(s.created_at))<7*86400000
+  let cls='scard'
+  if(isAfrica(s.region))cls+=' africa'
+  else if(isEurope(s.region))cls+=' europe'
+  else if(isRwanda(s.region))cls+=' rwanda'
+  if(isUrg)cls+=' urgent'
+  card.className=cls
+
+  let dlTxt='📅 Open — No deadline',dlCls='tag tag-dl'
+  if(s.deadline){
+    if(dl<=0){dlTxt='❌ Closed';dlCls='tag tag-urg'}
+    else if(dl<=7){dlTxt=`🔴 ${dl} days left!`;dlCls='tag tag-urg'}
+    else if(dl<=14)dlTxt=`🟠 ${dl} days left`
+    else dlTxt=`📅 Closes: ${new Date(s.deadline).toDateString()}`
+  }
+  let catBadge='b-int'
+  if(isAfrica(s.region))catBadge='b-afr'
+  else if(isEurope(s.region))catBadge='b-eur'
+  else if(isRwanda(s.region))catBadge='b-rwa'
+
+  card.innerHTML=`
+    <div class="card-top">
+      <h3>${s.title}</h3>
+      <div class="badges">
+        <span class="badge ${catBadge}">${s.country||'International'}</span>
+        <span class="badge b-free">FREE</span>
+        ${isNew?'<span class="badge b-new">NEW</span>':''}
+        ${isUrg?'<span class="badge b-urg">URGENT</span>':''}
+      </div>
+    </div>
+    <p class="desc">${s.description||'Full free scholarship for Rwandan students. Click Apply Now for details.'}</p>
+    <div class="tags-row">
+      <span class="tag">🎓 ${s.level||'Any level'}</span>
+      <span class="tag">📍 ${s.region||'International'}</span>
+      <span class="${dlCls}">${dlTxt}</span>
+      <span class="tag tag-free">💰 100% Free</span>
+    </div>
+    <div class="card-btns">
+      <a href="${s.link||'#'}" target="_blank" class="apply-btn">Apply Now →</a>
+      <button onclick="toggleAnn('${s.id}')" class="ann-btn" title="Official announcement">📢</button>
+      <button onclick="saveSch('${s.id}')" class="save-btn" title="Save">🔖</button>
+    </div>
+    <div class="ann-panel" id="ann-${s.id}">
+      <h5>📢 Official Announcement — ${s.title}</h5>
+      <div class="ann-text" id="ann-text-${s.id}">${s.announcement||'<em style="color:var(--muted)">Click to load official announcement...</em>'}</div>
+      <p class="ann-source">🔗 <a href="${s.link||'#'}" target="_blank" style="color:var(--blue)">${s.link||'Visit official website'}</a></p>
+    </div>`
+  return card
+}
+
+function toggleAnn(id){
+  const p=document.getElementById('ann-'+id)
+  const visible=p.style.display==='block'
+  p.style.display=visible?'none':'block'
+  if(!visible){
+    const el=document.getElementById('ann-text-'+id)
+    if(!el.textContent||el.querySelector('em'))fetchAnn(id,el)
+  }
+}
+
+async function fetchAnn(id,textEl){
+  textEl.innerHTML='<em style="color:var(--muted)">Loading official announcement...</em>'
+  const {data:s}=await db.from('scholarships').select('link,announcement,title').eq('id',id).single()
+  if(s&&s.announcement&&s.announcement.length>20){textEl.textContent=s.announcement;return}
+  if(!s||!s.link){textEl.textContent='Please visit the official website for details.';return}
+  let html=''
+  for(const proxy of PROXIES){
+    try{
+      const ctrl=new AbortController()
+      const t=setTimeout(()=>ctrl.abort(),8000)
+      const res=await fetch(proxy.url+encodeURIComponent(s.link),{signal:ctrl.signal})
+      clearTimeout(t)
+      if(res.ok){html=await proxy.parse(res);if(html.length>300)break}
+    }catch(e){continue}
+  }
+  const text=(html||'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().substring(0,1000)
+  const prompt=`Write a clear official scholarship announcement for ${s.title}. Include: who can apply, what is funded (tuition/living/flights?), deadline, how to apply. 100-150 words. ${text?'Based on this content: '+text.substring(0,600):''}`
+  try{
+    const raw=await callGroq(prompt)
+    const ann=raw.replace(/```/g,'').trim()
+    textEl.textContent=ann
+    try{await db.from('scholarships').update({announcement:ann}).eq('id',id)}catch(e){}
+  }catch(e){
+    textEl.textContent=text.substring(0,200)||'Please visit the official scholarship website for the full announcement.'
+  }
+}
+
+async function saveSch(id){
+  const email=localStorage.getItem('stu_email')
+  if(!email){showToast('Please register first!');showPage('register',null);return}
+  const {data:st}=await db.from('students').select('id').eq('email',email).single()
+  if(st){
+    const {error}=await db.from('saved_scholarships').insert({student_id:st.id,scholarship_id:id})
+    error?showToast('Already saved!'):showToast('✅ Scholarship saved!')
+  }
+}
+
+// ════════════════════════════════
+// LOAD LATEST
+// ════════════════════════════════
+async function loadLatest(){
+  const {data}=await db.from('scholarships').select('*').eq('status','published').order('created_at',{ascending:false}).limit(8)
+  const c=document.getElementById('latest-list');c.innerHTML=''
+  if(!data||!data.length){c.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:20px">No scholarships yet. Admin will scan soon!</p>';return}
+  data.forEach(s=>c.appendChild(buildCard(s)))
+}
+
+// ════════════════════════════════
+// WORLD SCHOLARSHIPS
+// ════════════════════════════════
+let allSch=[]
+async function loadScholarships(){
+  document.getElementById('loading').style.display='block'
+  document.getElementById('scholarships-list').innerHTML=''
+  document.getElementById('no-results').style.display='none'
+  const euR=['Italy','Romania','Germany','France','Netherlands','Belgium','Sweden','Norway','Hungary','Other Europe']
+  const afrR=['East Africa','Southern Africa','West Africa','North Africa','Pan-African']
+  const rwaR=['International University','Private University','Government','NGO']
+  const {data}=await db.from('scholarships').select('*').eq('status','published').not('region','in',`(${[...euR,...afrR,...rwaR].map(r=>'"'+r+'"').join(',')})`).order('deadline',{ascending:true,nullsFirst:false})
+  document.getElementById('loading').style.display='none'
+  allSch=data||[];displaySch(allSch)
+}
+function displaySch(list){
+  const c=document.getElementById('scholarships-list'),nr=document.getElementById('no-results')
+  c.innerHTML='';if(!list||!list.length){nr.style.display='block';return}
+  nr.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
+}
+function filterSch(){
+  const q=document.getElementById('search').value.toLowerCase()
+  const co=document.getElementById('filter-country').value
+  const lv=document.getElementById('filter-level').value
+  const so=document.getElementById('filter-sort').value
+  let list=allSch.filter(s=>(!q||s.title.toLowerCase().includes(q)||(s.description||'').toLowerCase().includes(q))&&(!co||s.country===co)&&(!lv||s.level===lv))
+  if(so==='newest')list=[...list].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+  displaySch(list)
+}
+document.getElementById('search').addEventListener('input',filterSch)
+document.getElementById('filter-country').addEventListener('change',filterSch)
+document.getElementById('filter-level').addEventListener('change',filterSch)
+document.getElementById('filter-sort').addEventListener('change',filterSch)
+
+// ════════════════════════════════
+// EUROPE SCHOLARSHIPS
+// ════════════════════════════════
+let allEu=[]
+async function loadEurope(){
+  const euR=['Italy','Romania','Germany','France','Netherlands','Belgium','Sweden','Norway','Hungary','Other Europe']
+  const {data}=await db.from('scholarships').select('*').eq('status','published').in('region',euR).order('deadline',{ascending:true,nullsFirst:false})
+  allEu=data||[];displayEu(allEu)
+}
+function filterEurope(r,btn){
+  document.querySelectorAll('#page-europe .rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
+  displayEu(r==='all'?allEu:allEu.filter(s=>s.region===r))
+}
+function displayEu(list){
+  const c=document.getElementById('europe-list'),e=document.getElementById('europe-empty')
+  c.innerHTML='';if(!list||!list.length){e.style.display='block';return}
+  e.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
+}
+
+// ════════════════════════════════
+// AFRICA SCHOLARSHIPS
+// ════════════════════════════════
+let allAfr=[]
+async function loadAfrica(){
+  const afrR=['East Africa','Southern Africa','West Africa','North Africa','Pan-African']
+  const {data}=await db.from('scholarships').select('*').eq('status','published').in('region',afrR).order('deadline',{ascending:true,nullsFirst:false})
+  allAfr=data||[];displayAfr(allAfr)
+}
+function filterAfrica(r,btn){
+  document.querySelectorAll('#page-africa .rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
+  displayAfr(r==='all'?allAfr:allAfr.filter(s=>s.region===r))
+}
+function displayAfr(list){
+  const c=document.getElementById('africa-list'),e=document.getElementById('africa-empty')
+  c.innerHTML='';if(!list||!list.length){e.style.display='block';return}
+  e.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
+}
+
+// ════════════════════════════════
+// RWANDA SCHOLARSHIPS
+// ════════════════════════════════
+let allRwa=[]
+async function loadRwanda(){
+  const rwaR=['International University','Private University','Government','NGO']
+  const {data}=await db.from('scholarships').select('*').eq('status','published').in('region',rwaR).order('deadline',{ascending:true,nullsFirst:false})
+  allRwa=data||[];displayRwa(allRwa)
+}
+function filterRwanda(r,btn){
+  document.querySelectorAll('#page-rwanda .rtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
+  displayRwa(r==='all'?allRwa:allRwa.filter(s=>s.region===r))
+}
+function displayRwa(list){
+  const c=document.getElementById('rwanda-list'),e=document.getElementById('rwanda-empty')
+  c.innerHTML='';if(!list||!list.length){e.style.display='block';return}
+  e.style.display='none';list.forEach(s=>c.appendChild(buildCard(s)))
+}
+
+// ════════════════════════════════
+// REGISTER
+// ════════════════════════════════
+async function registerStudent(){
+  const name=document.getElementById('reg-name').value.trim()
+  const email=document.getElementById('reg-email').value.trim()
+  if(!name||!email){showToast('Please fill name and email!');return}
+  const {error}=await db.from('students').insert({full_name:name,email,phone:document.getElementById('reg-phone').value.trim(),education_level:document.getElementById('reg-edu').value,field_of_study:document.getElementById('reg-field').value.trim(),nationality:'Rwandan',email_alerts:true})
+  if(error){error.code==='23505'?showToast('Email already registered!'):showToast('Error: '+error.message);return}
+  localStorage.setItem('stu_email',email)
+  document.getElementById('reg-ok').style.display='block'
+  showToast('🎉 Welcome '+name+'!');loadStats()
+}
+
+// ════════════════════════════════
+// ADMIN
+// ════════════════════════════════
+function adminLogin(){
+  if(document.getElementById('admin-pass').value===ADMIN_PASS){
+    localStorage.setItem('adm','1')
+    document.getElementById('admin-login-section').style.display='none'
+    document.getElementById('admin-dashboard').style.display='block'
+    loadAdminScholarships('published')
+    showToast('✅ Welcome Admin!')
+  }else showToast('❌ Wrong password!')
+}
+function adminLogout(){
+  localStorage.removeItem('adm')
+  document.getElementById('admin-login-section').style.display='block'
+  document.getElementById('admin-dashboard').style.display='none'
+  document.getElementById('admin-pass').value=''
+  showToast('🔒 Logged out')
+}
+function showTab(tab,btn){
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')
+  document.getElementById('tab-published').style.display=tab==='published'?'block':'none'
+  document.getElementById('tab-expired').style.display=tab==='expired'?'block':'none'
+  loadAdminScholarships(tab)
+}
+async function loadAdminScholarships(status){
+  const {data,count}=await db.from('scholarships').select('*',{count:'exact'}).eq('status',status).order('created_at',{ascending:false})
+  const cntEl=document.getElementById('cnt-'+status.substring(0,3));if(cntEl)cntEl.textContent=count||0
+  const c=document.getElementById(status+'-list');if(!c)return;c.innerHTML=''
+  if(!data||!data.length){c.innerHTML=`<p style="color:var(--muted);text-align:center;padding:30px">No ${status} scholarships</p>`;return}
+  data.forEach(s=>{
+    const card=document.createElement('div');card.className='acard'
+    const dl=daysLeft(s.deadline)
+    card.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <h4>${s.title}</h4>
+        <span class="sbadge sb-${status}">${status}</span>
+      </div>
+      <p>🌍 ${s.country||'?'} | 🎓 ${s.level||'Any'} | 📅 ${s.deadline||'Open'}${dl!==null?' ('+dl+' days)':''} | 📍 ${s.region||'?'}</p>
+      <p>${s.description||''}</p>
+      <p><a href="${s.link}" target="_blank" style="color:var(--blue);font-size:12px;word-break:break-all">${s.link||'No link'}</a></p>
+      <p style="font-size:11px;color:var(--muted)">Source: ${s.source||'?'} | ${new Date(s.created_at).toDateString()}</p>
+      <div class="acard-btns"><button class="ab ab-rem" onclick="removeSch('${s.id}')">🗑️ Remove</button></div>`
+    c.appendChild(card)
+  })
+}
+async function removeSch(id){
+  if(!confirm('Remove this scholarship?'))return
+  await db.from('scholarships').update({status:'expired'}).eq('id',id)
+  showToast('🗑️ Removed.');loadAdminScholarships('published');loadStats()
+}
+async function addManual(){
+  const title=document.getElementById('m-title').value.trim()
+  const country=document.getElementById('m-country').value.trim()
+  const deadline=document.getElementById('m-deadline').value
+  const link=document.getElementById('m-link').value.trim()
+  const region=document.getElementById('m-region').value
+  if(!title||!country||!link||!deadline){showToast('Please fill all required fields!');return}
+  if(!isFuture(deadline)){showToast('❌ Deadline has already passed!');return}
+  const manData={title,country,deadline,level:document.getElementById('m-level').value,
+    link,description:document.getElementById('m-desc').value.trim(),
+    region,is_africa:isAfrica(region),is_free:true,status:'published',source:'Manual'}
+  const manAnn=document.getElementById('m-ann').value.trim()
+  if(manAnn)manData.announcement=manAnn
+  const {error}=await db.from('scholarships').insert(manData)
+  if(error){showToast('Error: '+error.message);return}
+  showToast('✅ Scholarship published instantly!')
+  ;['m-title','m-country','m-deadline','m-link','m-desc','m-ann'].forEach(id=>document.getElementById(id).value='')
+  loadAdminScholarships('published');loadStats()
+}
+
+
+// Save to database — only FREE + future deadline
+async function saveToDB(result,uni){
+  if(!result.is_free)return'paid'
+  if(result.deadline&&!isFuture(result.deadline))return'expired'
+  // Rwanda-based unis: always use uni.region not AI guess
+  const finalRegion=(isRwanda(uni.region)||isAfrica(uni.region)||isEurope(uni.region))?uni.region:(result.region||uni.region||'International')
+  const finalCountry=result.country||uni.country
+  // Check duplicate by source
+  const {data:bySource}=await db.from('scholarships').select('id').eq('source',uni.name).eq('status','published').limit(1)
+  if(bySource&&bySource.length>0)return'duplicate'
+  // Check duplicate by title
+  const titleShort=(result.title||'').substring(0,40)
+  if(titleShort.length>10){
+    const {data:byTitle}=await db.from('scholarships').select('id').ilike('title',titleShort+'%').eq('status','published').limit(1)
+    if(byTitle&&byTitle.length>0)return'duplicate'
+  }
+  // Build insert object
+  const insertData={
+    title:(result.title||uni.name+' Scholarship').substring(0,200),
+    description:(result.description||'').substring(0,500),
+    deadline:result.deadline||null,
+    country:finalCountry,
+    level:result.level||'any',
+    link:(result.link||uni.url).substring(0,500),
+    region:finalRegion,
+    is_africa:isAfrica(finalRegion),
+    is_free:true,
+    status:'published',
+    source:uni.name
+  }
+  // Add announcement if available (column may not exist yet)
+  const ann=result.announcement||result.ann||null
+  if(ann)insertData.announcement=ann
+
+  const {error}=await db.from('scholarships').insert(insertData)
+  if(error){
+    if(error.code==='23505')return'duplicate'
+    // If column missing, try without announcement
+    if(error.message&&error.message.includes('announcement')){
+      delete insertData.announcement
+      const {error:e2}=await db.from('scholarships').insert(insertData)
+      if(e2){if(e2.code==='23505')return'duplicate';return'error: '+e2.message}
+      return'saved'
+    }
+    return'error: '+error.message
+  }
+  return'saved'
+}
+
+// ════════════════════════════════
+// ⚡ INSTANT PUSH
+// ════════════════════════════════
+let pushData=null
+async function instantPush(){
+  const url=document.getElementById('push-url').value.trim()
+  if(!url||!url.startsWith('http')){showToast('Please paste a valid URL!');return}
+  const btn=document.getElementById('push-btn')
+  btn.disabled=true;btn.textContent='⏳ Reading page...'
+  showToast('🤖 AI is reading the scholarship page...')
+  // Try to fetch page
+  let html=''
+  for(const proxy of PROXIES){
+    try{
+      const ctrl=new AbortController()
+      const t=setTimeout(()=>ctrl.abort(),8000)
+      const res=await fetch(proxy.url+encodeURIComponent(url),{signal:ctrl.signal})
+      clearTimeout(t);if(res.ok){html=await proxy.parse(res);if(html.length>300)break}
+    }catch(e){continue}
+  }
+  const text=html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().substring(0,1500)
+  const prompt=`Analyze scholarship page at ${url}.
+Extract ALL details. Only extract if FREE (fully funded, no fees). If paid, set is_free:false.
+Reply ONLY in JSON:
+{"is_scholarship":true,"is_free":true,"title":"exact name","country":"country","deadline":"YYYY-MM-DD or null","level":"bachelor or master or phd or any","link":"direct apply URL","description":"what is covered","region":"Italy or Romania or Germany or France or Netherlands or Belgium or Sweden or Norway or Hungary or Other Europe or East Africa or Southern Africa or West Africa or North Africa or Pan-African or International University or Private University or Government or NGO or International","announcement":"official announcement 100-130 words","is_africa":false}
+OR if paid: {"is_scholarship":false}
+Content: ${text.substring(0,1200)}`
+  try{
+    const raw=await callGroq(prompt,450)
+    const ext=parseAI(raw)
+    pushData=ext
+    document.getElementById('push-title').value=ext.title||''
+    document.getElementById('push-country').value=ext.country||''
+    document.getElementById('push-deadline').value=ext.deadline||''
+    document.getElementById('push-level').value=ext.level||'any'
+    document.getElementById('push-link').value=ext.link||url
+    document.getElementById('push-desc').value=ext.description||''
+    document.getElementById('push-ann').value=ext.announcement||''
+    document.getElementById('push-is-free').checked=ext.is_free!==false
+    if(ext.region)document.getElementById('push-region').value=ext.region
+    document.getElementById('push-preview').style.display='block'
+    if(!ext.is_scholarship)showToast('⚠️ AI did not find a scholarship on that page. Fill details manually.')
+    else if(!ext.is_free)showToast('⚠️ This appears to be a PAID scholarship. Uncheck FREE if correct.')
+    else showToast('✅ Scholarship extracted! Review details and confirm.')
+  }catch(e){
+    document.getElementById('push-link').value=url
+    document.getElementById('push-preview').style.display='block'
+    showToast('⚠️ Could not extract automatically — fill details manually.')
+  }
+  btn.disabled=false;btn.textContent='⚡ Extract & Push'
+}
+
+async function confirmPush(){
+  const title=document.getElementById('push-title').value.trim()
+  const country=document.getElementById('push-country').value.trim()
+  const deadline=document.getElementById('push-deadline').value
+  const link=document.getElementById('push-link').value.trim()
+  const isFree=document.getElementById('push-is-free').checked
+  const region=document.getElementById('push-region').value
+  if(!title||!country||!link){showToast('Please fill Title, Country and Link!');return}
+  if(!deadline){showToast('❌ Deadline is required!');return}
+  if(!isFuture(deadline)){showToast('❌ Deadline has already passed! Cannot publish expired scholarships.');return}
+  if(!isFree){showToast('❌ Only FREE scholarships are allowed on this website!');return}
+  const pushInsert={title,country,deadline,level:document.getElementById('push-level').value,link,
+    description:document.getElementById('push-desc').value.trim(),
+    region,is_africa:isAfrica(region),is_free:true,status:'published',source:'Instant Push'}
+  const pushAnn=document.getElementById('push-ann').value.trim()
+  if(pushAnn)pushInsert.announcement=pushAnn
+  const {error}=await db.from('scholarships').insert(pushInsert)
+  if(error){showToast('Error: '+error.message);return}
+  showToast('🎓 Scholarship published instantly to your website!')
+  document.getElementById('push-url').value='';document.getElementById('push-preview').style.display='none';pushData=null
+  loadAdminScholarships('published');loadLatest();loadStats()
+}
+function cancelPush(){
+  document.getElementById('push-preview').style.display='none'
+  document.getElementById('push-url').value='';pushData=null
+}
+
+// ════════════════════════════════
+// MAIN SCANNER
+// ════════════════════════════════
 let scChk=0,scPub=0,scSkip=0,scBlk=0,scRem=0
 function addLog(msg,type='i'){
   const log=document.getElementById('scan-log')
   const el=document.createElement('div');el.className='li l'+type
-  el.textContent=new Date().toLocaleTimeString()+' - '+msg
+  el.textContent=new Date().toLocaleTimeString()+' — '+msg
   log.appendChild(el);log.scrollTop=log.scrollHeight
 }
 function updateSc(){
@@ -618,49 +1130,43 @@ async function runScanner(mode='all'){
   document.getElementById('pbar').style.width='0%'
   ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true})
 
-  addLog('Triggering Python API scan...','i')
-  addLog('Your API scrapes 77 sources with real Chrome browser','i')
+  await removeExpired()
+  addLog('Triggering Python API scan on Render server...','i')
+  addLog('Real Chrome browser scrapes 77 sources. Takes about 10 minutes.','i')
 
   try{
     const res=await fetch(API_URL+'/scrape',{
       method:'POST',
       headers:{'x-api-key':API_KEY,'Content-Type':'application/json'}
     })
-
     if(res.ok){
-      const data=await res.json()
-      addLog('Scan started on server! This takes about 10 minutes.','s')
-      addLog('Your Supabase will update automatically as scholarships are found','i')
+      addLog('Scan started! Check back in 10 minutes for new scholarships.','s')
       document.getElementById('pbar').style.width='20%'
-
       let polls=0
       const poll=setInterval(async()=>{
         polls++
-        document.getElementById('pbar').style.width=Math.min(20+(polls*8),90)+'%'
-        addLog('Checking for new scholarships... ('+polls*30+'s elapsed)','i')
+        document.getElementById('pbar').style.width=Math.min(20+(polls*8),95)+'%'
+        addLog('Checking for new results... ('+polls*30+'s elapsed)','i')
         await loadAdminScholarships('published')
         const {count}=await db.from('scholarships').select('*',{count:'exact',head:true}).eq('status','published')
         if(count)addLog('Currently '+count+' active scholarships in database','s')
         if(polls>=20){
           clearInterval(poll)
           document.getElementById('pbar').style.width='100%'
-          addLog('Scan complete! Check your scholarship pages for new results.','s')
+          addLog('Scan complete! Check scholarship pages for new results.','s')
           ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
           loadStats();loadLatest()
           showToast('Scan complete! New scholarships added.')
         }
       },30000)
-
     }else{
       const err=await res.text()
       addLog('API error: '+err,'e')
-      addLog('Make sure your API is running at: '+API_URL,'w')
       ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
     }
   }catch(e){
     addLog('Cannot reach API: '+e.message,'e')
     addLog('API URL: '+API_URL,'w')
-    addLog('Make sure your Render deployment is running','w')
     ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
   }
 }
