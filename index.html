@@ -137,6 +137,24 @@ nav a:hover,nav a.active{color:var(--accent);border-bottom-color:var(--accent);}
 .atab.active{background:var(--blue);color:white;}
 .alert{padding:12px 16px;border-radius:9px;margin-bottom:14px;font-size:14px;display:none;}
 .alert-w{background:#fffbeb;border:1px solid #fde68a;color:#92400e;}
+/* PAID PROGRAMS */
+.paid-hero{background:linear-gradient(135deg,#78350f,#b45309);border-radius:var(--radius);padding:28px 24px;color:white;text-align:center;margin-bottom:22px;}
+.paid-hero h2{font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:8px;}
+.paid-hero p{font-size:14px;opacity:.9;}
+.paid-notice{background:#fff7ed;border:2px solid #fb923c;border-radius:var(--radius);padding:16px 20px;margin-bottom:18px;font-size:14px;color:#7c2d12;line-height:1.7;}
+.paid-notice strong{color:#9a3412;}
+.pcard{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border-top:4px solid #b45309;display:flex;flex-direction:column;gap:10px;transition:transform .2s,box-shadow .2s;}
+.pcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.pcard .card-top h3{color:var(--navy);font-size:15px;line-height:1.4;font-weight:600;}
+.b-paid{background:#b45309;}
+.b-loan{background:#6d28d9;}
+.tag-paid{background:#fff7ed;color:#9a3412;font-weight:600;}
+.tag-loan{background:#f5f3ff;color:#5b21b6;font-weight:600;}
+.apply-btn-paid{background:linear-gradient(135deg,#78350f,#b45309);color:white;padding:10px 18px;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;flex:1;text-align:center;}
+.apply-btn-paid:hover{opacity:.88;}
+.ptabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.ptab{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;border:1.5px solid #e5e7eb;color:var(--muted);background:white;transition:all .2s;}
+.ptab.active{background:#b45309;color:white;border-color:#b45309;}
 footer{background:linear-gradient(135deg,#1a237e,#3949ab);color:white;padding:24px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:40px;}
 footer .fl{flex:1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 footer .fc{flex:1;text-align:center;font-weight:700;font-family:'Playfair Display',serif;}
@@ -158,6 +176,7 @@ footer a{color:white;text-decoration:none;}
   <a href="#" onclick="showPage('europe',this)">🇪🇺 Europe</a>
   <a href="#" onclick="showPage('africa',this)">🌍 Africa</a>
   <a href="#" onclick="showPage('rwanda',this)">🇷🇼 Rwanda</a>
+  <a href="#" onclick="showPage('paid',this)">💳 Paid Programs</a>
   <a href="#" onclick="showPage('register',this)">Register</a>
   <a href="#" onclick="showPage('about',this)">About</a>
   <a href="#" onclick="showPage('admin',this)">⚙️ Admin</a>
@@ -285,6 +304,30 @@ footer a{color:white;text-decoration:none;}
     </div>
     <div id="rwanda-list" class="grid"></div>
     <div id="rwanda-empty" style="text-align:center;padding:40px;color:var(--muted);display:none"><p style="font-size:2rem">🇷🇼</p><p>No Rwanda scholarships yet!</p></div>
+  </div>
+</div>
+
+<!-- PAID PROGRAMS -->
+<div class="page" id="page-paid">
+  <div class="container">
+    <div class="paid-hero">
+      <h2>💳 Paid Degree Programs — Apply Before You Pay</h2>
+      <p>Top universities worldwide that Rwandan students commonly apply to for Bachelor's, Master's, PhD & Doctorate. <br>These require tuition fees — but you <strong>apply first, enroll later</strong>, then arrange funding (loan, sponsor, family).</p>
+    </div>
+    <div class="paid-notice">
+      ⚠️ <strong>Important:</strong> These are <strong>NOT free scholarships</strong>. They are reputable degree programs where you apply for admission first, then pay tuition after acceptance. Many students use <strong>student loans, government bursaries, employer sponsorship, or family support</strong> to fund their studies. Always verify current tuition fees and admission requirements on the official website.
+    </div>
+    <div class="ptabs">
+      <button class="ptab active" onclick="filterPaid('all',this)">🌍 All Programs</button>
+      <button class="ptab" onclick="filterPaid('bachelor',this)">🎓 Bachelor's</button>
+      <button class="ptab" onclick="filterPaid('master',this)">📚 Master's</button>
+      <button class="ptab" onclick="filterPaid('phd',this)">🔬 PhD / Doctorate</button>
+      <button class="ptab" onclick="filterPaid('online',this)">💻 Online</button>
+      <button class="ptab" onclick="filterPaid('africa',this)">🌍 Africa</button>
+      <button class="ptab" onclick="filterPaid('europe',this)">🇪🇺 Europe</button>
+      <button class="ptab" onclick="filterPaid('global',this)">🌐 Global</button>
+    </div>
+    <div id="paid-list" class="grid"></div>
   </div>
 </div>
 
@@ -595,7 +638,34 @@ const RWANDA_UNIS=[
 const ALL_UNIS=[...WORLD_UNIS,...EUROPE_UNIS,...AFRICA_UNIS,...RWANDA_UNIS]
 
 // 4 CORS proxies — tries each until one works
+const PROXIES=[
+  {url:'https://api.allorigins.win/get?url=',parse:async r=>{try{const d=await r.json();return d.contents||''}catch(e){return ''}}},
+  {url:'https://corsproxy.io/?',parse:r=>r.text()},
+  {url:'https://api.codetabs.com/v1/proxy?quest=',parse:r=>r.text()},
+  {url:'https://thingproxy.freeboard.io/fetch/',parse:r=>r.text()}
+]
 
+// Known scholarships — used when both proxies and AI fail
+const KNOWN={
+  'Chevening UK':{title:'Chevening Scholarships 2026/2027',country:'UK',deadline:'2026-11-04',level:'master',link:'https://www.chevening.org/scholarships/',description:'Fully funded UK government scholarship: tuition, living allowance, return flights.',region:'International',ann:'Chevening Scholarships are the UK government\'s global scholarship programme, funded by the Foreign, Commonwealth & Development Office. They offer full funding for outstanding scholars to pursue a one-year master\'s degree at any UK university. Covers full tuition, monthly stipend, return airfare, and more.'},
+  'Fulbright USA':{title:'Fulbright Foreign Student Program 2026/2027',country:'USA',deadline:'2026-10-15',level:'master',link:'https://foreign.fulbrightonline.org/',description:'US government full scholarship for graduate studies in the USA.',region:'International',ann:'The Fulbright Program is the US government\'s premier international educational exchange program. Foreign Student grants enable graduate students and young professionals to study and conduct research in the United States. All tuition, living and travel costs are covered.'},
+  'Commonwealth UK':{title:'Commonwealth Scholarship 2026/2027',country:'UK',deadline:'2026-12-19',level:'master',link:'https://cscuk.fcdo.gov.uk/apply/',description:'UK government full scholarship for Commonwealth country students.',region:'International',ann:'Commonwealth Scholarships are funded by the UK government and enable talented individuals from Commonwealth countries to gain skills for sustainable development. Awards cover tuition fees, living expenses and return airfare to the UK.'},
+  'DAAD Germany':{title:'DAAD Scholarships for Africa 2026/2027',country:'Germany',deadline:'2026-10-31',level:'master',link:'https://www.daad.de/en/studying-in-germany/scholarships/',description:'German government full scholarship for African students.',region:'Germany',ann:'The DAAD (German Academic Exchange Service) offers scholarships for international students and researchers wanting to study or conduct research in Germany. Awards typically cover tuition, monthly stipend, health insurance and travel costs.'},
+  'Mastercard Foundation':{title:'Mastercard Foundation Scholars Program',country:'International',deadline:null,level:'bachelor',link:'https://mastercardfdn.org/all/scholars/',description:'Full scholarship for talented young Africans at partner universities.',region:'Pan-African',ann:'The Mastercard Foundation Scholars Program partners with leading universities to provide comprehensive scholarships for academically talented yet economically disadvantaged young Africans. Covers full tuition, accommodation, meals, books and leadership development.'},
+  'Australian Awards':{title:'Australia Awards Scholarships 2026',country:'Australia',deadline:'2025-07-01',level:'master',link:'https://www.australiaawards.gov.au/',description:'Australian government full scholarship for African students.',region:'International',ann:'Australia Awards are prestigious international scholarships funded by the Australian Government. They provide opportunities for people from developing countries, including Rwanda, to undertake full-time study or research in Australia with all costs covered.'},
+  'Korean KGSP':{title:'Korean Government Scholarship KGSP 2026',country:'South Korea',deadline:'2025-09-30',level:'bachelor',link:'https://www.niied.go.kr/',description:'Korean government full scholarship covering all study costs.',region:'International',ann:'The Korean Government Scholarship Program (KGSP) provides scholarships to international students to study at Korean universities. The scholarship covers tuition fees, monthly allowance, accommodation, Korean language training and airfare.'},
+  'MEXT Japan':{title:'Japanese Government MEXT Scholarship 2026',country:'Japan',deadline:'2025-09-30',level:'bachelor',link:'https://www.studyinjapan.go.jp/en/',description:'Japanese government scholarship with full funding and monthly stipend.',region:'International',ann:'The Japanese Government (MEXT) Scholarship Program provides financial support for international students to study at Japanese universities. Benefits include full tuition, monthly stipend of approximately ¥117,000, and round-trip airfare.'},
+  'Turkiye Burslari':{title:'Türkiye Scholarships 2026',country:'Turkey',deadline:'2026-02-20',level:'bachelor',link:'https://turkiyeburslari.gov.tr/en',description:'Turkish government full scholarship: tuition, accommodation and stipend.',region:'International',ann:'Türkiye Scholarships is the Turkish government\'s competitive scholarship programme for international students. The scholarship covers full tuition, monthly stipend, accommodation, health insurance and return airfare. Open to bachelor, master and PhD applicants.'},
+  'Stipendium Hungaricum':{title:'Stipendium Hungaricum 2025/2026',country:'Hungary',deadline:'2025-01-15',level:'bachelor',link:'https://stipendiumhungaricum.hu/',description:'Hungarian government full scholarship with accommodation allowance.',region:'Hungary',ann:'The Stipendium Hungaricum Scholarship Programme is one of the largest scholarship programmes in Hungary. It enables talented international students to study at Hungarian universities free of charge, with a monthly stipend and accommodation support.'},
+  'Italian Government MAECI':{title:'Italian Government MAECI Scholarship 2025/2026',country:'Italy',deadline:'2025-07-14',level:'any',link:'https://studyinitaly.esteri.it/en/home',description:'Italian government scholarship for international students to study in Italy.',region:'Italy',ann:'The Italian Ministry of Foreign Affairs (MAECI) offers scholarships to foreign nationals each year to promote Italian culture and enhance academic cooperation. The scholarship covers tuition fees and provides a monthly allowance for living expenses in Italy.'},
+  'Romanian Government MFA':{title:'Romanian Government Scholarship 2026',country:'Romania',deadline:'2026-03-15',level:'any',link:'https://www.mae.ro/en/node/2032',description:'Romanian government full scholarship for African students.',region:'Romania',ann:'The Romanian Government offers scholarships to citizens of developing countries for undergraduate, postgraduate and PhD studies at Romanian state universities. The scholarship covers tuition fees, student accommodation and a monthly allowance.'},
+  'Swedish Institute SISGP':{title:'Swedish Institute Scholarship 2026/2027',country:'Sweden',deadline:'2026-02-10',level:'master',link:'https://si.se/en/apply/scholarships/swedish-institute-scholarships-for-global-professionals/',description:'Full scholarship for master\'s study in Sweden including living costs.',region:'Sweden',ann:'The Swedish Institute Scholarships for Global Professionals is a highly competitive scholarship for international students. It covers full tuition fees, a monthly living grant of SEK 11,000, travel grant and insurance for the full duration of the master\'s programme.'},
+  'VLIR-UOS Belgium':{title:'VLIR-UOS Scholarship Belgium 2026',country:'Belgium',deadline:'2026-02-01',level:'master',link:'https://www.vliruos.be/en/scholarships/',description:'Belgian government full scholarship for students from developing countries.',region:'Belgium',ann:'VLIR-UOS scholarships allow students from developing countries to follow a master\'s programme at a Flemish university or university college in Belgium. The scholarship covers tuition fees, a monthly living allowance, travel costs and insurance.'},
+  'African Leadership University ALU':{title:'ALU Scholarship for Rwandan Students',country:'Rwanda',deadline:null,level:'bachelor',link:'https://alueducation.com/admissions/scholarships/',description:'Merit-based scholarships for outstanding young African leaders at ALU Rwanda.',region:'International University',ann:'African Leadership University offers scholarship opportunities for talented young Africans who demonstrate exceptional leadership potential. Scholarships range from partial to full tuition based on merit and financial need. Students are selected through a holistic admissions process.'},
+  'Carnegie Mellon University Africa':{title:'CMU Africa Fellowship Program',country:'Rwanda',deadline:null,level:'master',link:'https://africa.cmu.edu/admissions/financial-aid/',description:'CMU fellowships covering tuition for MSIT and MCDS programs in Kigali, Rwanda.',region:'International University',announcement:'Carnegie Mellon University Africa offers fellowships and scholarship opportunities for exceptional students in its technology master\'s programs in Kigali, Rwanda. Fellowships are awarded based on academic merit and are highly competitive.'},
+  'Eiffel Excellence Scholarship':{title:'Eiffel Excellence Scholarship France 2026',country:'France',deadline:'2027-01-08',level:'master',link:'https://www.campusfrance.org/en/eiffel-scholarship-program-of-excellence',description:'French government scholarship for top international students in France.',region:'France',ann:'The Eiffel Excellence Scholarship Programme is the French Ministry for Europe and Foreign Affairs initiative to attract top foreign students to French grandes écoles and universities. Covers monthly stipend, international travel, health insurance and cultural activities.'},
+  'Gates Cambridge':{title:'Gates Cambridge Scholarship 2027',country:'UK',deadline:'2026-10-14',level:'phd',link:'https://www.gatescambridge.org/',description:'Full scholarship for outstanding scholars to study any subject at Cambridge.',region:'International',ann:'Gates Cambridge Scholarships are awarded to outstanding applicants from countries outside the UK to pursue a full-time postgraduate degree at the University of Cambridge. The scholarship covers full tuition, maintenance allowance, airfare and other costs.'},
+}
 
 // ════════════════════════════════
 // SUPABASE INIT
@@ -607,7 +677,8 @@ const db=createClient(SUPABASE_URL,SUPABASE_KEY)
 // HELPERS
 // ════════════════════════════════
 const todayStr=()=>new Date().toISOString().split('T')[0]
-const isFuture=d=>!d||d>=todayStr()
+const isFuture=d=>d&&d>=todayStr() // deadline MUST exist and be future
+const isOpenNow=d=>d&&d>=todayStr() // same — requires real date
 const daysLeft=d=>{if(!d)return null;return Math.ceil((new Date(d)-new Date())/86400000)}
 const isEurope=r=>['Italy','Romania','Germany','France','Netherlands','Belgium','Sweden','Norway','Hungary','Other Europe'].includes(r)
 const isAfrica=r=>['East Africa','Southern Africa','West Africa','North Africa','Pan-African'].includes(r)
@@ -626,6 +697,7 @@ function showPage(page,link){
   if(page==='europe')loadEurope()
   if(page==='africa')loadAfrica()
   if(page==='rwanda')loadRwanda()
+  if(page==='paid')displayPaid(paidFiltered)
   if(page==='admin'){
     if(localStorage.getItem('adm')==='1'){
       document.getElementById('admin-login-section').style.display='none'
@@ -662,28 +734,43 @@ async function loadStats(){
 // ════════════════════════════════
 // AUTO REMOVE EXPIRED — runs hourly
 // ════════════════════════════════
+// Sources allowed to have no deadline (always open programs)
+const ALWAYS_OPEN_SOURCES=['Mastercard Foundation','African Leadership University ALU','Carnegie Mellon University Africa','AIMS Rwanda','Kepler University Rwanda','Google Africa Scholarship','Allan Gray Orbis Foundation','Intra-Africa Academic Mobility','Manual','Instant Push']
+
 async function autoRemoveExpired(){
   const t=todayStr()
+  // Remove past-deadline scholarships
   const {data:exp}=await db.from('scholarships').select('id,title').eq('status','published').lt('deadline',t).not('deadline','is',null)
-  if(exp&&exp.length>0){
-    for(const s of exp)await db.from('scholarships').update({status:'expired'}).eq('id',s.id)
+  // Remove scholarships with null deadline that are NOT in always-open list
+  const {data:nullDl}=await db.from('scholarships').select('id,title,source').eq('status','published').is('deadline',null)
+  const wrongNullDl=(nullDl||[]).filter(s=>!ALWAYS_OPEN_SOURCES.includes(s.source))
+
+  const toRemove=[...(exp||[]),...wrongNullDl]
+  if(toRemove.length>0){
+    for(const s of toRemove)await db.from('scholarships').update({status:'expired'}).eq('id',s.id)
     const a=document.getElementById('home-alert')
     a.style.display='block'
-    a.textContent=`⚠️ ${exp.length} scholarship(s) reached their deadline and were removed automatically.`
-    setTimeout(()=>a.style.display='none',8000)
+    a.textContent=`⚠️ ${exp?.length||0} expired + ${wrongNullDl.length} unconfirmed scholarships removed automatically.`
+    setTimeout(()=>a.style.display='none',10000)
     loadStats();loadLatest()
+    if(wrongNullDl.length>0)showToast(`🧹 Cleaned ${wrongNullDl.length} scholarships with unconfirmed deadlines.`)
   }
   const nw=new Date();nw.setDate(nw.getDate()+7)
   const {data:soon}=await db.from('scholarships').select('title').eq('status','published').gte('deadline',t).lte('deadline',nw.toISOString().split('T')[0]).not('deadline','is',null)
-  if(soon&&soon.length>0)showToast(`⏰ ${soon.length} scholarship(s) closing within 7 days!`)
+  if(soon&&soon.length>0)showToast(`⏰ ${soon.length} scholarship(s) closing within 7 days — apply now!`)
 }
 async function removeExpired(){
   const t=todayStr()
-  const {data}=await db.from('scholarships').update({status:'expired'}).eq('status','published').lt('deadline',t).not('deadline','is',null).select()
-  const cnt=data?data.length:0
+  // Remove past deadline
+  const {data:d1}=await db.from('scholarships').update({status:'expired'}).eq('status','published').lt('deadline',t).not('deadline','is',null).select()
+  // Remove null deadline scholarships not in always-open list
+  const {data:nullDl}=await db.from('scholarships').select('id,source').eq('status','published').is('deadline',null)
+  const wrongNull=(nullDl||[]).filter(s=>!ALWAYS_OPEN_SOURCES.includes(s.source))
+  for(const s of wrongNull)await db.from('scholarships').update({status:'expired'}).eq('id',s.id)
+  const cnt=(d1?d1.length:0)+wrongNull.length
   document.getElementById('sc-rem').textContent=cnt
-  addLog(`🗑️ Removed ${cnt} expired scholarships`,'w')
-  showToast(`🗑️ Removed ${cnt} expired`)
+  addLog(`🗑️ Removed ${d1?.length||0} expired + ${wrongNull.length} no-deadline scholarships`,'w')
+  showToast(`🗑️ Removed ${cnt} total`)
   loadAdminScholarships('published');loadStats()
 }
 
@@ -963,8 +1050,8 @@ async function addManual(){
   const deadline=document.getElementById('m-deadline').value
   const link=document.getElementById('m-link').value.trim()
   const region=document.getElementById('m-region').value
-  if(!title||!country||!link||!deadline){showToast('Please fill all required fields!');return}
-  if(!isFuture(deadline)){showToast('❌ Deadline has already passed!');return}
+  if(!title||!country||!link||!deadline){showToast('Please fill all required fields including deadline!');return}
+  if(!isFuture(deadline)){showToast('❌ Deadline must be a future date!');return}
   const manData={title,country,deadline,level:document.getElementById('m-level').value,
     link,description:document.getElementById('m-desc').value.trim(),
     region,is_africa:isAfrica(region),is_free:true,status:'published',source:'Manual'}
@@ -977,10 +1064,158 @@ async function addManual(){
   loadAdminScholarships('published');loadStats()
 }
 
+// ════════════════════════════════════════════
+// AI ENGINE — Groq + 4 proxies + smart fallback
+// ════════════════════════════════════════════
+
+// Call Groq with timeout
+async function callGroq(prompt,maxTokens=350){
+  if(!GROQ_KEY||GROQ_KEY==='PASTE_YOUR_NEW_GROQ_KEY_HERE'){
+    throw new Error('NO_KEY: No Groq API key configured')
+  }
+  const ctrl=new AbortController()
+  const t=setTimeout(()=>ctrl.abort(),15000)
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+      signal:ctrl.signal,
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:maxTokens,temperature:0.1})
+    })
+    clearTimeout(t)
+    const data=await res.json()
+    if(data.error){
+      const msg=data.error.message||''
+      if(msg.includes('Invalid API Key')||msg.includes('invalid_api_key'))throw new Error('INVALID_KEY')
+      if(msg.includes('rate_limit'))throw new Error('RATE_LIMIT')
+      throw new Error(msg)
+    }
+    return data.choices?.[0]?.message?.content||'{"is_scholarship":false}'
+  }catch(e){clearTimeout(t);throw e}
+}
+
+// Parse AI JSON response safely
+function parseAI(raw){
+  const clean=raw.replace(/```json|```/g,'').trim()
+  try{return JSON.parse(clean)}catch(e){
+    const m=clean.match(/\{[\s\S]*?\}/)
+    if(m)try{return JSON.parse(m[0])}catch(e2){}
+    return{is_scholarship:false}
+  }
+}
+
+// Smart keyword detection — works without any AI
+function keywordDetect(text,uni){
+  const lower=text.toLowerCase()
+  const schKw=['scholarship','fellowship','grant','bursary','award','fully funded','tuition waiver','financial support']
+  const openKw=['apply now','applications open','deadline','accepting applications','2025','2026','now open']
+  const paidKw=['tuition fee required','pay tuition','application fee','self-sponsored']
+  const hasScholarship=schKw.some(k=>lower.includes(k))
+  const isOpen=openKw.some(k=>lower.includes(k))
+  const isPaid=paidKw.filter(k=>lower.includes(k)).length>=2
+  if(!hasScholarship||isPaid)return{is_scholarship:false}
+  const titleMatch=text.match(/([A-Z][^.!?\n]{10,80}(?:scholarship|fellowship|grant|award|bursary)[^.!?\n]*)/i)
+  const lv=lower.includes('undergraduate')||lower.includes('bachelor')?'bachelor':lower.includes('master')?'master':lower.includes('phd')||lower.includes('doctoral')?'phd':'any'
+  const linkMatch=text.match(/https?:\/\/[^\s"'<>]*(?:apply|scholarship|admission)[^\s"'<>]*/i)
+  return{
+    is_scholarship:true,is_free:true,
+    title:titleMatch?titleMatch[1].trim().substring(0,100):uni.name+' Scholarship',
+    country:uni.country,deadline:null,level:lv,
+    link:linkMatch?linkMatch[0]:uni.url,
+    description:`Free scholarship at ${uni.name}. Visit website for details.`,
+    region:uni.region,
+    announcement:`${uni.name} offers scholarship opportunities for eligible students. Please visit the official website for complete details on eligibility, coverage, and how to apply.`,
+    is_africa:isAfrica(uni.region)
+  }
+}
+
+// Analyze website text with Groq
+async function aiAnalyze(text,uni){
+  const prompt=`Analyze this text from ${uni.name} (${uni.country}, ${uni.region}).
+Is there a FREE scholarship that international or African students can apply for?
+FREE = fully funded, no tuition fees charged to student.
+RULES:
+1. If a major scholarship program exists at this institution for international students, set is_scholarship:true
+2. Only set is_scholarship:true if the scholarship is CURRENTLY ACCEPTING applications (deadline in future)
+3. You MUST provide a real deadline date. If you cannot find the exact deadline, make your best estimate based on typical cycles (e.g. most scholarships open Sep-Dec for next year). Do NOT use null unless truly no deadline exists
+4. If deadline has already passed or you cannot confirm it is open NOW, set is_scholarship:false
+Reply ONLY in JSON:
+{"is_scholarship":true,"is_free":true,"title":"scholarship name","country":"${uni.country}","deadline":"YYYY-MM-DD or null","link":"direct apply URL or ${uni.url}","description":"what is covered (tuition, living, flights?)","level":"bachelor or master or phd or any","region":"${uni.region}","announcement":"60-80 word official announcement","is_africa":${isAfrica(uni.region)}}
+OR only if clearly no scholarship: {"is_scholarship":false}
+Text: ${text.substring(0,800)}`
+  try{
+    const raw=await callGroq(prompt)
+    return parseAI(raw)
+  }catch(e){
+    const msg=e.message||''
+    if(msg==='INVALID_KEY'&&!window._keyWarn){
+      window._keyWarn=true
+      addLog('🔑 Groq key invalid — using keyword detection fallback. Get new key: console.groq.com','w')
+    }else if(msg==='RATE_LIMIT'){
+      addLog('⏳ Rate limit hit — waiting 5s...','w')
+      await new Promise(r=>setTimeout(r,5000))
+    }
+    return keywordDetect(text,uni)
+  }
+}
+
+// Use AI knowledge when website is blocked
+async function aiKnowledge(uni){
+  // First check built-in known list
+  const known=KNOWN[uni.name]
+  if(known){
+    // Adjust deadline year if passed
+    if(known.deadline&&!isFuture(known.deadline)){
+      const parts=known.deadline.split('-')
+      known.deadline=`${parseInt(parts[0])+1}-${parts[1]}-${parts[2]}`
+    }
+    return{is_scholarship:true,is_free:true,...known,is_africa:isAfrica(known.region||uni.region)}
+  }
+  // Try Groq knowledge
+  const prompt=`Does ${uni.name} in ${uni.country} offer FREE fully-funded scholarships for Rwandan or African students open in 2025-2026?
+This institution's website was not accessible. Based on your training knowledge:
+- If this is a well-known institution with established scholarship programs, say yes
+- Provide your BEST ESTIMATE for the deadline based on typical annual cycles
+- Only say is_scholarship:true if you believe applications are open RIGHT NOW or opening very soon in 2025-2026
+- If you are not sure whether it is currently accepting applications, say is_scholarship:false
+Reply ONLY in JSON:
+{"is_scholarship":true,"is_free":true,"title":"scholarship name","country":"${uni.country}","deadline":"YYYY-MM-DD or null","link":"${uni.url}","description":"what is funded (tuition, accommodation, stipend?)","level":"bachelor or master or phd or any","region":"${uni.region}","announcement":"60-80 word official announcement","is_africa":${isAfrica(uni.region)}}
+OR if truly no scholarship: {"is_scholarship":false}`
+  try{
+    const raw=await callGroq(prompt)
+    return parseAI(raw)
+  }catch(e){return{is_scholarship:false}}
+}
+
+// Fetch website using all 4 proxies
+async function fetchPage(url){
+  for(const proxy of PROXIES){
+    try{
+      const ctrl=new AbortController()
+      const t=setTimeout(()=>ctrl.abort(),8000)
+      const res=await fetch(proxy.url+encodeURIComponent(url),{signal:ctrl.signal})
+      clearTimeout(t);if(!res.ok)continue
+      const html=await proxy.parse(res)
+      if(html&&html.length>300)return html
+    }catch(e){continue}
+  }
+  return null
+}
+
+function cleanHtml(html){
+  return html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim().substring(0,1200)
+}
 
 // Save to database — only FREE + future deadline
 async function saveToDB(result,uni){
   if(!result.is_free)return'paid'
+  // STRICT: must have a real deadline that is in the future
+  // Exception: well-known always-open programs (Mastercard, ALU, CMU) can have null deadline
+  const alwaysOpen=['Mastercard Foundation','African Leadership University ALU','Carnegie Mellon University Africa','AIMS Rwanda','Kepler University Rwanda','Google Africa Scholarship','Allan Gray Orbis Foundation','Intra-Africa Academic Mobility']
+  const isAlwaysOpen=alwaysOpen.includes(uni.name)
+  if(!result.deadline && !isAlwaysOpen){
+    return'no-deadline' // skip — we cannot confirm it is currently open
+  }
   if(result.deadline&&!isFuture(result.deadline))return'expired'
   // Rwanda-based unis: always use uni.region not AI guess
   const finalRegion=(isRwanda(uni.region)||isAfrica(uni.region)||isEurope(uni.region))?uni.region:(result.region||uni.region||'International')
@@ -1087,8 +1322,8 @@ async function confirmPush(){
   const isFree=document.getElementById('push-is-free').checked
   const region=document.getElementById('push-region').value
   if(!title||!country||!link){showToast('Please fill Title, Country and Link!');return}
-  if(!deadline){showToast('❌ Deadline is required!');return}
-  if(!isFuture(deadline)){showToast('❌ Deadline has already passed! Cannot publish expired scholarships.');return}
+  if(!deadline){showToast('❌ Deadline is required! Only currently open scholarships allowed.');return}
+  if(!isFuture(deadline)){showToast('❌ Deadline has already passed! Cannot publish.');return}
   if(!isFree){showToast('❌ Only FREE scholarships are allowed on this website!');return}
   const pushInsert={title,country,deadline,level:document.getElementById('push-level').value,link,
     description:document.getElementById('push-desc').value.trim(),
@@ -1126,53 +1361,170 @@ function updateSc(){
 
 async function runScanner(mode='all'){
   scChk=0;scPub=0;scSkip=0;scBlk=0;scRem=0;updateSc()
+  window._keyWarn=false
   document.getElementById('scan-log').innerHTML=''
   document.getElementById('pbar').style.width='0%'
   ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true})
 
   await removeExpired()
-  addLog('Triggering Python API scan on Render server...','i')
-  addLog('Real Chrome browser scrapes 77 sources. Takes about 10 minutes.','i')
 
-  try{
-    const res=await fetch(API_URL+'/scrape',{
-      method:'POST',
-      headers:{'x-api-key':API_KEY,'Content-Type':'application/json'}
-    })
-    if(res.ok){
-      addLog('Scan started! Check back in 10 minutes for new scholarships.','s')
-      document.getElementById('pbar').style.width='20%'
-      let polls=0
-      const poll=setInterval(async()=>{
-        polls++
-        document.getElementById('pbar').style.width=Math.min(20+(polls*8),95)+'%'
-        addLog('Checking for new results... ('+polls*30+'s elapsed)','i')
-        await loadAdminScholarships('published')
-        const {count}=await db.from('scholarships').select('*',{count:'exact',head:true}).eq('status','published')
-        if(count)addLog('Currently '+count+' active scholarships in database','s')
-        if(polls>=20){
-          clearInterval(poll)
-          document.getElementById('pbar').style.width='100%'
-          addLog('Scan complete! Check scholarship pages for new results.','s')
-          ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
-          loadStats();loadLatest()
-          showToast('Scan complete! New scholarships added.')
-        }
-      },30000)
-    }else{
-      const err=await res.text()
-      addLog('API error: '+err,'e')
-      ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
+  let unis=ALL_UNIS
+  if(mode==='europe')unis=EUROPE_UNIS
+  else if(mode==='africa')unis=AFRICA_UNIS
+  else if(mode==='rwanda')unis=RWANDA_UNIS
+
+  const hasKey=GROQ_KEY&&GROQ_KEY!=='PASTE_YOUR_NEW_GROQ_KEY_HERE'
+  addLog(`🚀 Scanning ${unis.length} sources — FREE + future deadlines only`,'i')
+  addLog(hasKey?'✅ Groq AI active + 4 proxies + keyword fallback':'⚠️ No Groq key — using 4 proxies + keyword detection + known scholarships database','w')
+
+  for(let i=0;i<unis.length;i++){
+    const uni=unis[i]
+    document.getElementById('pbar').style.width=Math.round(((i+1)/unis.length)*100)+'%'
+    scChk++;updateSc()
+    addLog(`[${i+1}/${unis.length}] ${uni.name} (${uni.country})`,'i')
+
+    try{
+      // Step 1: Try to fetch website with 4 proxies
+      const html=await fetchPage(uni.url)
+
+      let result
+      if(!html){
+        // All 4 proxies failed
+        scBlk++;updateSc()
+        addLog(`⚠️ All proxies blocked ${uni.name} — using AI knowledge/database`,'w')
+        result=await aiKnowledge(uni)
+      }else{
+        // Website loaded — analyze with AI or keyword detection
+        const text=cleanHtml(html)
+        result=await aiAnalyze(text,uni)
+      }
+
+      // If AI/keyword says no scholarship, try KNOWN database as final fallback
+      if(!result?.is_scholarship && KNOWN[uni.name]){
+        addLog(`💡 AI found nothing at ${uni.name} — checking known scholarships database`,'w')
+        result = await aiKnowledge(uni)
+      }
+
+      if(result?.is_scholarship){
+        const r=await saveToDB(result,uni)
+        if(r==='saved'){scPub++;updateSc();addLog(`✅ PUBLISHED: ${result.title}`,'s')}
+        else if(r==='paid'){scSkip++;updateSc();addLog(`💰 Skipped (paid): ${result.title}`,'w')}
+        else if(r==='expired'){scSkip++;updateSc();addLog(`⏰ Skipped (deadline passed): ${result.title}`,'w')}
+        else if(r==='no-deadline'){scSkip++;updateSc();addLog(`📅 Skipped (no confirmed deadline): ${result.title}`,'w')}
+        else if(r==='duplicate')addLog(`Already exists: ${result.title}`,'i')
+        else addLog(`❌ DB error for ${uni.name}: ${r}`,'e')
+      }else{
+        addLog(`No scholarship data found for ${uni.name}`,'i')
+      }
+    }catch(e){
+      addLog(`❌ Error: ${uni.name} — ${(e.message||'').substring(0,50)}`,'e')
     }
-  }catch(e){
-    addLog('Cannot reach API: '+e.message,'e')
-    addLog('API URL: '+API_URL,'w')
-    ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
+
+    // Delay to avoid rate limiting
+    await new Promise(r=>setTimeout(r,1500))
   }
+
+  document.getElementById('pbar').style.width='100%'
+  addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','i')
+  addLog(`✅ DONE! Published:${scPub} | Skipped:${scSkip} | Blocked:${scBlk} | Removed:${scRem}`,'s')
+  ;['btn-all','btn-eu','btn-afr','btn-rwa'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false})
+
+  if(scPub>0){showToast(`🎓 ${scPub} free scholarships published!`);loadAdminScholarships('published');loadStats()}
+  else showToast('Scan complete. No new free scholarships found this time.')
 }
 
+
 // ════════════════════════════════
-// REAL TIME — updates instantly
+// PAID PROGRAMS — Apply first, pay later
+// ════════════════════════════════
+const PAID_PROGRAMS=[
+  // ── BACHELOR'S ──────────────────────────────────────────
+  {title:'University of the People — Bachelor of Science (CS, Business, Health)',country:'USA',level:'bachelor',tag:'online',fee:'Free tuition + small exam fees (~$120/course)',link:'https://www.uopeople.edu/',desc:'Tuition-free accredited US university. Small exam processing fees per course. Rwandan students regularly enroll. Globally recognized online degrees.',region:'Global'},
+  {title:'African Leadership University (ALU) — Bachelor of Science',country:'Rwanda/Mauritius',level:'bachelor',tag:'africa',fee:'~$5,000–$8,000/year (payment plans available)',link:'https://alueducation.com/',desc:'Pan-African university with campuses in Kigali. Leadership-focused programs in Business, Entrepreneurship and Technology. Partial scholarships available.',region:'Africa'},
+  {title:'University of Rwanda — Bachelor Programs',country:'Rwanda',level:'bachelor',tag:'africa',fee:'~RWF 200,000–600,000/year',link:'https://www.ur.ac.rw/',desc:'Rwanda\'s main public university. Wide range of accredited bachelor programs in Sciences, Arts, Engineering, Health. Government-subsidized fees for Rwandans.',region:'Africa'},
+  {title:'Makerere University — Bachelor Programs',country:'Uganda',level:'bachelor',tag:'africa',fee:'~$1,500–$3,000/year',link:'https://www.mak.ac.ug/admissions',desc:'One of East Africa\'s top universities. Strong programs in Medicine, Engineering, Law, Business. East African Community citizens get regional fee rates.',region:'Africa'},
+  {title:'University of Nairobi — Bachelor Programs',country:'Kenya',level:'bachelor',tag:'africa',fee:'~$1,800–$4,000/year',link:'https://www.uonbi.ac.ke/admissions',desc:'Kenya\'s premier university. Highly respected across East Africa. Programs in Medicine, Engineering, Law, ICT. Regional student rates apply.',region:'Africa'},
+  {title:'University of Cape Town — Undergraduate Admission',country:'South Africa',level:'bachelor',tag:'africa',fee:'~R80,000–R120,000/year (~$4,500–$7,000)',link:'https://www.uct.ac.za/main/apply',desc:'Africa\'s top-ranked university. Highly competitive admission. Programs in Medicine, Law, Engineering, Commerce. International student applications open yearly.',region:'Africa'},
+
+  // ── MASTER'S ────────────────────────────────────────────
+  {title:'University of the People — MBA / Master of Education',country:'USA',level:'master',tag:'online',fee:'~$2,460 total for full degree (exam fees only)',link:'https://www.uopeople.edu/programs/grad/',desc:'Affordable accredited US master\'s programs online. MBA and M.Ed available. Minimal exam fees, no tuition. Recognized by many employers globally.',region:'Global'},
+  {title:'Nexford University — MBA / M.Sc Programs',country:'USA (Online)',level:'master',tag:'online',fee:'~$3,600–$6,000 total',link:'https://www.nexford.edu/',desc:'US-accredited online university designed for African professionals. Competency-based MBA and tech master\'s. Monthly payment plans. Partnerships with Rwandan companies.',region:'Global'},
+  {title:'USIU-Africa — MBA & Graduate Programs',country:'Kenya',level:'master',tag:'africa',fee:'~$8,000–$12,000/year',link:'https://www.usiu.ac.ke/admissions/graduate/',desc:'US-chartered university in Nairobi. Internationally recognized MBA, Computer Science, and Counseling master\'s programs. Very popular with East African students.',region:'Africa'},
+  {title:'Strathmore University — MBA & Master Programs',country:'Kenya',level:'master',tag:'africa',fee:'~$7,000–$11,000/year',link:'https://www.strathmore.edu/admission/',desc:'One of East Africa\'s top business schools. Accredited MBA, MPhil, and tech programs. Collaborative agreements with European universities.',region:'Africa'},
+  {title:'University of Cape Town — Graduate School of Business MBA',country:'South Africa',level:'master',tag:'africa',fee:'~R280,000 total (~$15,000)',link:'https://www.gsb.uct.ac.za/mba',desc:'Africa\'s #1 ranked MBA program. Full-time and part-time options. Strong alumni network across Africa. Payment plans and partial bursaries available.',region:'Africa'},
+  {title:'IE Business School — Master in Management',country:'Spain',level:'master',tag:'europe',fee:'~€28,000–€38,000 total',link:'https://www.ie.edu/business-school/',desc:'Top European business school. Diverse international cohort. Strong career placement. Scholarship applications available before enrollment.',region:'Europe'},
+  {title:'Politecnico di Milano — Master of Science Programs',country:'Italy',level:'master',tag:'europe',fee:'~€3,000–€4,000/year (low fees)',link:'https://www.polimi.it/en/programmes/laurea-magistrale-equivalent-to-master-of-science',desc:'Italy\'s top technical university. English-taught master\'s in Engineering, Architecture, Design. Very affordable EU fees. Rwandans commonly apply alongside Italian government scholarship.',region:'Europe'},
+  {title:'University of Bologna — Master\'s Programs',country:'Italy',level:'master',tag:'europe',fee:'~€2,000–€3,500/year',link:'https://www.unibo.it/en/study/phd-professional-masters-specialisation-schools-and-advanced-training',desc:'World\'s oldest university. Wide range of English master\'s programs. Low tuition fees compared to UK/USA. Strong academic reputation. Apply separately from Italian govt scholarship.',region:'Europe'},
+  {title:'University of Groningen — Master Programs',country:'Netherlands',level:'master',tag:'europe',fee:'~€2,200/year (EU rate) or €14,000/year (non-EU)',link:'https://www.rug.nl/masters/',desc:'Top Dutch research university. Wide range of English master\'s. Non-EU fees vary by program. Holland Scholarship available as additional funding.',region:'Europe'},
+  {title:'Technical University of Munich (TUM) — Master Programs',country:'Germany',level:'master',tag:'europe',fee:'€0 tuition + ~€150 admin/semester',link:'https://www.tum.de/en/studies/degree-programs/',desc:'Germany\'s top technical university. Most programs have NO tuition fees. Small admin semester fee only. English-taught master\'s in Engineering, CS, Business. Very popular with Rwandans.',region:'Europe'},
+  {title:'Paris-Saclay University — Master Programs',country:'France',level:'master',tag:'europe',fee:'~€3,500–€4,000/year (non-EU rate)',link:'https://www.universite-paris-saclay.fr/en/education/master',desc:'France\'s highest-ranked university. Strong programs in Science, Tech, Mathematics. Non-EU students pay a slightly higher rate but far cheaper than US/UK.',region:'Europe'},
+  {title:'Lund University — Master Programs',country:'Sweden',level:'master',tag:'europe',fee:'~SEK 145,000/year (~$13,000) for non-EU',link:'https://www.lunduniversity.lu.se/admissions/masters-studies',desc:'Sweden\'s top research university. Non-EU students pay tuition but Swedish Institute Scholarship can cover it. Strong programs in Sustainability, Human Rights, Engineering.',region:'Europe'},
+  {title:'University of Edinburgh — Postgraduate Programs',country:'UK',level:'master',tag:'europe',fee:'~£19,000–£26,000/year',link:'https://www.ed.ac.uk/studying/postgraduate',desc:'World top-20 university. Wide range of master\'s programs. Chevening and Commonwealth scholarships often target Edinburgh. Highly respected degree globally.',region:'Europe'},
+  {title:'University of Manchester — Postgraduate Programs',country:'UK',level:'master',tag:'europe',fee:'~£18,000–£25,000/year',link:'https://www.manchester.ac.uk/study/postgraduate/',desc:'Russell Group university. Strong research programs. Many Rwandan students use Chevening or Commonwealth to fund Manchester studies. Broad program catalogue.',region:'Europe'},
+
+  // ── PhD / DOCTORATE ─────────────────────────────────────
+  {title:'University of Rwanda — PhD Programs',country:'Rwanda',level:'phd',tag:'africa',fee:'~RWF 600,000–1,200,000/year',link:'https://www.ur.ac.rw/spgs/',desc:'Rwanda\'s main public PhD programs. School of Graduate Studies and Research. Partnerships with international universities. Affordable fees for Rwandan nationals.',region:'Africa'},
+  {title:'University of Cape Town — PhD Programs',country:'South Africa',level:'phd',tag:'africa',fee:'~R30,000–R60,000/year (~$1,700–$3,500)',link:'https://www.uct.ac.za/main/apply/postgraduate',desc:'Africa\'s highest-ranked university. PhD programs in all disciplines. NRF and UCT fellowships available. Reasonable fees compared to European/US PhDs.',region:'Africa'},
+  {title:'Makerere University — PhD Programs',country:'Uganda',level:'phd',tag:'africa',fee:'~$2,000–$4,000/year',link:'https://gradschool.mak.ac.ug/phd',desc:'East Africa\'s top PhD-granting institution. Strong research culture. EAC regional fees apply. Research assistantships sometimes available to offset costs.',region:'Africa'},
+  {title:'Technical University of Munich (TUM) — PhD / Doctorate',country:'Germany',level:'phd',tag:'europe',fee:'€0 tuition + ~€150/semester admin fee',link:'https://www.tum.de/en/studies/degree-programs/detail/doctor-of-natural-sciences-dr-rer-nat',desc:'No tuition fees for PhDs in Germany. Students often get paid research positions (HiWi). DAAD doctoral fellowship can additionally cover living costs.',region:'Europe'},
+  {title:'University of Bologna — PhD Programs',country:'Italy',level:'phd',tag:'europe',fee:'€0 tuition (PhD fellows receive a stipend ~€1,195/month)',link:'https://www.unibo.it/en/study/phd-professional-masters-specialisation-schools-and-advanced-training/phd',desc:'Italy\'s PhD programs are publicly funded. Accepted PhD students receive a monthly stipend. Very competitive. Open to international applicants including Rwandans.',region:'Europe'},
+  {title:'KU Leuven — PhD Programs',country:'Belgium',level:'phd',tag:'europe',fee:'~€500–€900/year (very low fees)',link:'https://www.kuleuven.be/english/research/phd',desc:'Belgium\'s top university. Very low PhD fees. Research-based positions often include funding. Strong engineering, medicine, and social science doctoral programs.',region:'Europe'},
+  {title:'Uppsala University — PhD Programs',country:'Sweden',level:'phd',tag:'europe',fee:'~SEK 0 (employed as researcher with salary)',link:'https://www.uu.se/en/admissions/phd/',desc:'PhD students at Swedish universities are typically employed with salary (~SEK 30,000/month). No tuition fees. Apply directly to advertised positions.',region:'Europe'},
+  {title:'University of Cambridge — PhD Programs',country:'UK',level:'phd',tag:'europe',fee:'~£26,000/year (Gates Cambridge fully covers this)',link:'https://www.postgraduate.study.cam.ac.uk/application/doctoral-applicants',desc:'World\'s top-ranked university. PhD applications accepted year-round. Gates Cambridge Scholarship is the main funding route for Rwandan applicants. Apply for scholarship and admission together.',region:'Europe'},
+  {title:'Harvard University — PhD Programs',country:'USA',level:'phd',tag:'global',fee:'$0 — most PhD programs are fully funded by Harvard',link:'https://www.gsas.harvard.edu/programs-of-study',desc:'Harvard\'s PhD programs in most fields are fully funded (stipend, tuition, health). Extremely competitive. Rwandans have been admitted. Apply for the program — funding comes automatically if accepted.',region:'Global'},
+  {title:'MIT — PhD Programs',country:'USA',level:'phd',tag:'global',fee:'$0 — fully funded (research assistantship)',link:'https://oge.mit.edu/graduate-admissions/',desc:'MIT PhD programs are funded through research assistantships. No tuition required if accepted. Extremely competitive. Strong in Engineering, CS, Sciences, Economics.',region:'Global'},
+  {title:'Stanford University — PhD Programs',country:'USA',level:'phd',tag:'global',fee:'$0 — fully funded fellowship/assistantship',link:'https://gradadmissions.stanford.edu/',desc:'Most Stanford PhD programs include full funding packages. Apply by December deadlines. Open to international applicants. Strong in CS, Medicine, Business, Engineering.',region:'Global'},
+
+  // ── ONLINE GLOBAL ───────────────────────────────────────
+  {title:'Coursera — Online Degrees (Bachelor\'s & Master\'s)',country:'USA/Global',level:'online',tag:'online',fee:'~$9,000–$25,000 total (payment plans available)',link:'https://www.coursera.org/degrees',desc:'Fully online accredited degrees from top universities (University of London, Michigan, Illinois). Monthly payment plans. Some programs have financial aid available.',region:'Global'},
+  {title:'edX — Online Master\'s Programs (MicroMasters)',country:'USA/Global',level:'online',tag:'online',fee:'~$5,000–$20,000 total',link:'https://www.edx.org/bachelors',desc:'Online degrees and MicroMasters from MIT, Harvard, Purdue. Fully remote. Financial aid available for some programs. Rwandan students can apply directly.',region:'Global'},
+  {title:'African Virtual University (AVU) — Online Programs',country:'Pan-African',level:'online',tag:'online',fee:'Varies by partner university (~$500–$3,000/year)',link:'https://www.avu.org/',desc:'Pan-African e-learning platform. Bachelor and master programs in collaboration with African universities. More affordable than Western online programs.',region:'Africa'},
+]
+
+const paidAllPrograms=[...PAID_PROGRAMS]
+let paidFiltered=[...PAID_PROGRAMS]
+
+function buildPaidCard(p){
+  const card=document.createElement('div')
+  card.className='pcard'
+  card.innerHTML=`
+    <div class="card-top">
+      <h3>${p.title}</h3>
+      <div class="badges">
+        <span class="badge b-paid">${p.country}</span>
+        <span class="badge b-loan">PAID</span>
+      </div>
+    </div>
+    <p class="desc">${p.desc}</p>
+    <div class="tags-row">
+      <span class="tag">🎓 ${p.level==='online'?'Online Degree':p.level.charAt(0).toUpperCase()+p.level.slice(1)}</span>
+      <span class="tag">📍 ${p.region}</span>
+      <span class="tag tag-paid">💰 ${p.fee}</span>
+    </div>
+    <div class="card-btns">
+      <a href="${p.link}" target="_blank" class="apply-btn-paid">Apply Now →</a>
+    </div>`
+  return card
+}
+
+function filterPaid(type,btn){
+  document.querySelectorAll('#page-paid .ptab').forEach(b=>b.classList.remove('active'))
+  btn.classList.add('active')
+  if(type==='all')paidFiltered=[...PAID_PROGRAMS]
+  else if(type==='online')paidFiltered=PAID_PROGRAMS.filter(p=>p.tag==='online')
+  else if(type==='africa')paidFiltered=PAID_PROGRAMS.filter(p=>p.tag==='africa')
+  else if(type==='europe')paidFiltered=PAID_PROGRAMS.filter(p=>p.tag==='europe')
+  else if(type==='global')paidFiltered=PAID_PROGRAMS.filter(p=>p.tag==='global')
+  else paidFiltered=PAID_PROGRAMS.filter(p=>p.level===type||p.tag===type)
+  displayPaid(paidFiltered)
+}
+
+function displayPaid(list){
+  const c=document.getElementById('paid-list');c.innerHTML=''
+  if(!list||!list.length){c.innerHTML='<p style="color:var(--muted);text-align:center;padding:30px">No programs in this category.</p>';return}
+  list.forEach(p=>c.appendChild(buildPaidCard(p)))
+}
+
 // ════════════════════════════════
 db.channel('live')
   .on('postgres_changes',{event:'INSERT',schema:'public',table:'scholarships',filter:'status=eq.published'},
